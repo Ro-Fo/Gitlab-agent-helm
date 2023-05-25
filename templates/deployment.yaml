@@ -61,6 +61,10 @@ spec:
             {{- range .Values.extraArgs }}
             - {{ . }}
             {{- end }}
+          ports:
+            - name: observability
+              containerPort: 8080
+              protocol: TCP
           livenessProbe:
             httpGet:
               path: /liveness
