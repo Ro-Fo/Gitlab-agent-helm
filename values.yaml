@@ -41,6 +41,10 @@ podAnnotations:
   prometheus.io/path: "/metrics"
   prometheus.io/port: "8080"
 
+serviceMonitor:
+  # Specifies whether to create a ServiceMonitor resource for collecting Prometheus metrics
+  enabled: false
+
 config:
   kasAddress: 'wss://kas.gitlab.com'
   # kasHeaders:
