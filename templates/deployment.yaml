@@ -1,7 +1,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "gitlab-agent.fullname" . }}
+  # NOTE: the `-v1` suffix was introduced as an epoch version to be able
+  # to gracefully recreate the deployment in case there is no upgrade
+  # path otherwise, e.g. when changing an immutable field.
+  # see https://gitlab.com/gitlab-org/charts/gitlab-agent/-/issues/38 for ctx
+  name: {{ include "gitlab-agent.fullname" . | trunc 60 }}-v1
   labels:
     {{- include "gitlab-agent.labels" . | nindent 4 }}
 spec:
