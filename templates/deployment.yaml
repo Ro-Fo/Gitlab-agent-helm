@@ -100,14 +100,16 @@ spec:
             {{- toYaml .Values.extraEnv | nindent 12 }}
           {{- end }}
           volumeMounts:
-             - name: secret-volume
-               mountPath: /etc/agentk/secrets
+            - name: secret-volume
+              mountPath: /etc/agentk/secrets
             {{- if ((.Values.config.observability).tls).enabled }}
-             - name: observability-secret-volume
-               mountPath: /etc/agentk/observability-secrets
+            - name: observability-secret-volume
+              mountPath: /etc/agentk/observability-secrets
             {{- end }}
-             - name: config-volume
-               mountPath: /etc/agentk/config
+            {{- if .Values.config.caCert }}
+            - name: config-volume
+              mountPath: /etc/agentk/config
+            {{- end }}
       volumes:
         - name: secret-volume
           secret:
@@ -117,9 +119,11 @@ spec:
           secret:
             secretName: {{ include "gitlab-agent.observabilitySecretName" . }}
         {{- end }}
+        {{- if .Values.config.caCert }}
         - name: config-volume
           configMap:
             name: {{ include "gitlab-agent.fullname" . }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
