@@ -70,6 +70,12 @@ extraEnv: []
 extraArgs: []
 # Add additional args settings to the pod.
 
+extraVolumeMounts: []
+# Add extra volume mounts
+
+extraVolumes: []
+# Add extra volumes
+
 resources: {}
   # limits:
   #   cpu: 100m
