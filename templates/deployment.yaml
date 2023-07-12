@@ -102,13 +102,16 @@ spec:
           volumeMounts:
             - name: secret-volume
               mountPath: /etc/agentk/secrets
+              readOnly: true
             {{- if ((.Values.config.observability).tls).enabled }}
             - name: observability-secret-volume
               mountPath: /etc/agentk/observability-secrets
+              readOnly: true
             {{- end }}
             {{- if .Values.config.caCert }}
             - name: config-volume
               mountPath: /etc/agentk/config
+              readOnly: true
             {{- end }}
       volumes:
         - name: secret-volume
