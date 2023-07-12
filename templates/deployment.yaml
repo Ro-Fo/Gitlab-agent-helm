@@ -113,6 +113,9 @@ spec:
               mountPath: /etc/agentk/config
               readOnly: true
             {{- end }}
+            {{- if .Values.extraVolumeMounts }}
+            {{- toYaml .Values.extraVolumeMounts | nindent 12 }}
+            {{- end }}
       volumes:
         - name: secret-volume
           secret:
@@ -129,6 +132,9 @@ spec:
           configMap:
             defaultMode: 0400
             name: {{ include "gitlab-agent.fullname" . }}
+        {{- end }}
+        {{- if .Values.extraVolumes }}
+        {{- toYaml .Values.extraVolumes | nindent 8 }}
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
