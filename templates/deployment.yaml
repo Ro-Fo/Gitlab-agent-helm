@@ -30,6 +30,7 @@ spec:
         {{-   toYaml . | nindent 8 }}
         {{- end }}
     spec:
+      automountServiceAccountToken: false
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -100,6 +101,9 @@ spec:
             {{- toYaml .Values.extraEnv | nindent 12 }}
           {{- end }}
           volumeMounts:
+            - name: service-account-token-volume
+              mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+              readOnly: true
             - name: secret-volume
               mountPath: /etc/agentk/secrets
               readOnly: true
@@ -117,6 +121,20 @@ spec:
             {{- toYaml .Values.extraVolumeMounts | nindent 12 }}
             {{- end }}
       volumes:
+        - name: service-account-token-volume
+          projected:
+            sources:
+            - configMap:
+                name: kube-root-ca.crt
+            - downwardAPI:
+                items:
+                - fieldRef:
+                    apiVersion: v1
+                    fieldPath: metadata.namespace
+                  path: namespace
+            - serviceAccountToken:
+                expirationSeconds: 3600
+                path: token
         - name: secret-volume
           secret:
             defaultMode: 0400
