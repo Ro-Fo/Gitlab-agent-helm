@@ -54,6 +54,7 @@ config:
   # caCert: "PEM certificate file to use to verify config.kasAddress. Useful if config.kasAddress is self-signed."
 
   observability:
+    enabled: true
     # Application-level TLS configuration for the observability service
     tls:
       enabled: false
