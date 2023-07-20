@@ -47,6 +47,7 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          terminationMessagePolicy: {{ .Values.terminationMessagePolicy }}
           args:
             - --token-file=/etc/agentk/secrets/token
             - --kas-address={{ .Values.config.kasAddress }}
