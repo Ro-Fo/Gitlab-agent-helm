@@ -37,6 +37,19 @@ test:upgrade:
     - helm install gitlab-agent . --wait --set config.kasAddress='wss://kas.gitlab.test' --set config.token='FAKE-AGENT-TOKEN'
     - helm upgrade gitlab-agent . --wait --reuse-values
 
+test:install:secret:
+  extends: .k3s
+  script:
+    - kubectl create secret generic test-secret --from-literal=token='FAKE-AGENT-TOKEN'
+    - helm install gitlab-agent . --wait --set config.kasAddress='wss://kas.gitlab.test' --set config.secretName='test-secret'
+
+test:upgrade:secret:
+  extends: .k3s
+  script:
+    - kubectl create secret generic test-secret --from-literal=token='FAKE-AGENT-TOKEN'
+    - helm install gitlab-agent . --wait --set config.kasAddress='wss://kas.gitlab.test' --set config.secretName='test-secret'
+    - helm upgrade gitlab-agent . --wait --reuse-values
+
 .k3s:
   stage: test
   image: $HELM_INSTALL_IMAGE
