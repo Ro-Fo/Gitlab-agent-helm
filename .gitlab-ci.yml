@@ -27,14 +27,14 @@ publish:
     - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+(-rc[0-9]+)?$/ && $CI_PROJECT_URL == "https://gitlab.com/gitlab-org/security/charts/gitlab-agent"'
 
 .install_script_token: &install_script_token
-- helm install gitlab-agent . --wait --set config.kasAddress='wss://kas.gitlab.test' --set config.token='FAKE-AGENT-TOKEN'
+  - helm install gitlab-agent . --wait --set config.kasAddress='wss://kas.gitlab.test' --set config.token='FAKE-AGENT-TOKEN'
 
 .install_script_secret: &install_script_secret
-- kubectl create secret generic test-secret --from-literal=token='FAKE-AGENT-TOKEN'
-- helm install gitlab-agent . --wait --set config.kasAddress='wss://kas.gitlab.test' --set config.secretName='test-secret'
+  - kubectl create secret generic test-secret --from-literal=token='FAKE-AGENT-TOKEN'
+  - helm install gitlab-agent . --wait --set config.kasAddress='wss://kas.gitlab.test' --set config.secretName='test-secret'
 
 .upgrade_script: &upgrade_script
-- helm upgrade gitlab-agent . --wait --reuse-values
+  - helm upgrade gitlab-agent . --wait --reuse-values
 
 test:install:
   extends: .k3s
