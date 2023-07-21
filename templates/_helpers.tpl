@@ -64,6 +64,21 @@ Secret Name
 {{- end }}
 
 {{/*
+Common annotations
+*/}}
+{{- define "gitlab-agent.annotations" -}}
+{{- with .Values.config.token }}
+{{ printf "checksum/token: %s" (. | sha256sum) }}
+{{- end }}
+{{- with .Values.podAnnotations }}
+{{ toYaml . }}
+{{- end }}
+{{- if and (not .Values.config.token) (not .Values.podAnnotations) }}
+{{ printf "{}" -}}
+{{- end }}
+{{- end }}
+
+{{/*
 Observability TLS Secret Name
 */}}
 {{- define "gitlab-agent.observabilitySecretName" -}}

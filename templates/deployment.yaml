@@ -20,10 +20,8 @@ spec:
       {{- include "gitlab-agent.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- include "gitlab-agent.annotations" . | indent 8 }}
       labels:
         {{- include "gitlab-agent.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
