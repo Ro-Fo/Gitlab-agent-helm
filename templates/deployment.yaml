@@ -107,9 +107,11 @@ spec:
             - name: service-account-token-volume
               mountPath: /var/run/secrets/kubernetes.io/serviceaccount
               readOnly: true
+            {{- if or .Values.config.token .Values.config.secretName }}
             - name: secret-volume
               mountPath: /etc/agentk/secrets
               readOnly: true
+            {{- end }}
             {{- if ((.Values.config.observability).tls).enabled }}
             - name: observability-secret-volume
               mountPath: /etc/agentk/observability-secrets
@@ -143,10 +145,12 @@ spec:
             - serviceAccountToken:
                 expirationSeconds: 3600
                 path: token
+        {{- if or .Values.config.token .Values.config.secretName }}
         - name: secret-volume
           secret:
             defaultMode: 0444
             secretName: {{ include "gitlab-agent.secretName" . }}
+        {{- end }}
         {{- if ((.Values.config.observability).tls).enabled }}
         - name: observability-secret-volume
           secret:
