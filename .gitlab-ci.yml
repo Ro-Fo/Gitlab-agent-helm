@@ -31,36 +31,65 @@ publish:
   - helm repo update
 
 .create_secret_when_needed: &create_secret_when_needed
-  - if [[ "$HELM_VALUE" == "config.secretName"* ]]; then kubectl create secret generic test-secret --from-literal=token='FAKE-AGENT-TOKEN'; fi
+  - if [[ "$CONFIG_VALUE" == "config.secretName"* ]]; then kubectl create secret generic test-secret --from-literal=token='FAKE-AGENT-TOKEN'; fi
 
 .helm_install_from_local_dir: &helm_install_from_local_dir
   - *create_secret_when_needed
-  - helm install gitlab-agent . --wait --set config.kasAddress='wss://kas.gitlab.test' --set "$HELM_VALUE"
+  - helm install gitlab-agent . --wait --set config.kasAddress='wss://kas.gitlab.test' --set "$CONFIG_VALUE"
 
 .helm_install_published_chart: &helm_install_published_chart
   - *helm_repo_setup
   - *create_secret_when_needed
-  - helm upgrade --install gitlab-agent gitlab/gitlab-agent --wait --set config.kasAddress='wss://kas.gitlab.test' --set "$HELM_VALUE"
+  - helm upgrade --install gitlab-agent gitlab/gitlab-agent --wait --set config.kasAddress='wss://kas.gitlab.test' --set "$CONFIG_VALUE"
 
 .helm_upgrade_from_local_dir: &helm_upgrade_from_local_dir
   - helm upgrade gitlab-agent . --wait --reuse-values
 
-test:local:install:
+test:local:install:secret:
   extends: .k3s
   script:
     - *helm_install_from_local_dir
+  variables:
+    CONFIG_VALUE: config.secretName='test-secret'
 
-test:local:upgrade:
+test:local:install:token:
+  extends: .k3s
+  script:
+    - *helm_install_from_local_dir
+  variables:
+    CONFIG_VALUE: config.token='FAKE-AGENT-TOKEN'
+
+test:local:upgrade:secret:
   extends: .k3s
   script:
     - *helm_install_from_local_dir
     - *helm_upgrade_from_local_dir
+  variables:
+    CONFIG_VALUE: config.secretName='test-secret'
 
-test:breaking:upgrade:
+test:local:upgrade:token:
+  extends: .k3s
+  script:
+    - *helm_install_from_local_dir
+    - *helm_upgrade_from_local_dir
+  variables:
+    CONFIG_VALUE: config.token='FAKE-AGENT-TOKEN'
+
+test:breaking:upgrade:secret:
   extends: .k3s
   script:
     - *helm_install_published_chart
     - *helm_upgrade_from_local_dir
+  variables:
+    CONFIG_VALUE: config.secretName='test-secret'
+
+test:breaking:upgrade:token:
+  extends: .k3s
+  script:
+    - *helm_install_published_chart
+    - *helm_upgrade_from_local_dir
+  variables:
+    CONFIG_VALUE: config.token='FAKE-AGENT-TOKEN'
 
 .k3s:
   stage: test
@@ -76,9 +105,3 @@ test:breaking:upgrade:
     - export KUBECONFIG=$(pwd)/k3s.yaml
     - kubectl version
     - kubectl cluster-info
-  parallel:
-    matrix:
-      - NAME: with token
-        HELM_VALUE: config.token='FAKE-AGENT-TOKEN'
-      - NAME: with pre-defined secret
-        HELM_VALUE: config.secretName='test-secret'
