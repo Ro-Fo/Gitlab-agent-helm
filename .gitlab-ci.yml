@@ -8,6 +8,11 @@ stages:
 variables:
   HELM_INSTALL_IMAGE: registry.gitlab.com/gitlab-org/cluster-integration/helm-install-image:helm-3.10.2-kube-1.24.8-alpine-3.15
 
+  # TEST CONFIGURATION
+  CHART_NAME: 'gitlab/gitlab-agent'
+  CHART_RELEASE_NAME: 'gitlab-agent'
+  CHART_VALUE_KAS_ADDRESS: 'wss://kas.gitlab.example.com'
+
 lint:helm:
   image: $HELM_INSTALL_IMAGE
   script:
@@ -26,46 +31,44 @@ publish:
     - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+(-rc[0-9]+)?$/ && $CI_PROJECT_URL == "https://gitlab.com/gitlab-org/charts/gitlab-agent"'
     - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+(-rc[0-9]+)?$/ && $CI_PROJECT_URL == "https://gitlab.com/gitlab-org/security/charts/gitlab-agent"'
 
-.helm_repo_setup: &helm_repo_setup
-  - helm repo add gitlab https://charts.gitlab.io
-  - helm repo update
-
-.create_secret_when_needed: &create_secret_when_needed
-  - if [[ "$CONFIG_VALUE" == "config.secretName"* ]]; then kubectl create secret generic test-secret --from-literal=token='FAKE-AGENT-TOKEN'; fi
+.create_secret: &create_secret
+  - kubectl create secret generic test-secret --from-literal=token='FAKE-AGENT-TOKEN'
 
 .helm_install_from_local_dir: &helm_install_from_local_dir
-  - *create_secret_when_needed
-  - helm install gitlab-agent . --wait --set config.kasAddress='wss://kas.gitlab.test' --set "$CONFIG_VALUE"
+  - helm install "$CHART_RELEASE_NAME" . --wait --set config.kasAddress="$CHART_VALUE_KAS_ADDRESS" $HELM_INSTALL_ARGS
 
 .helm_install_published_chart: &helm_install_published_chart
-  - *helm_repo_setup
-  - *create_secret_when_needed
-  - helm upgrade --install gitlab-agent gitlab/gitlab-agent --wait --set config.kasAddress='wss://kas.gitlab.test' --set "$CONFIG_VALUE"
+  - helm repo add gitlab https://charts.gitlab.io
+  - helm repo update
+  - helm install "$CHART_RELEASE_NAME" "$CHART_NAME" --wait --set config.kasAddress="$CHART_VALUE_KAS_ADDRESS" $HELM_INSTALL_ARGS
 
 .helm_upgrade_from_local_dir: &helm_upgrade_from_local_dir
-  - helm upgrade gitlab-agent . --wait --reuse-values
+  - helm upgrade $CHART_RELEASE_NAME . --wait --reuse-values
 
 test:local:install:secret:
   extends: .k3s
   script:
+    - *create_secret
     - *helm_install_from_local_dir
   variables:
-    CONFIG_VALUE: config.secretName='test-secret'
+    HELM_INSTALL_ARGS: --set config.secretName='test-secret'
 
 test:local:install:token:
   extends: .k3s
   script:
     - *helm_install_from_local_dir
   variables:
-    CONFIG_VALUE: config.token='FAKE-AGENT-TOKEN'
+    HELM_INSTALL_ARGS: --set config.token='FAKE-AGENT-TOKEN'
 
 test:local:upgrade:secret:
   extends: .k3s
   script:
+    - *create_secret
     - *helm_install_from_local_dir
     - *helm_upgrade_from_local_dir
   variables:
-    CONFIG_VALUE: config.secretName='test-secret'
+    HELM_INSTALL_ARGS: --set config.secretName='test-secret'
+    HELM_UPGRADE_ARGS: $HELM_INSTALL_ARGS
 
 test:local:upgrade:token:
   extends: .k3s
@@ -73,15 +76,18 @@ test:local:upgrade:token:
     - *helm_install_from_local_dir
     - *helm_upgrade_from_local_dir
   variables:
-    CONFIG_VALUE: config.token='FAKE-AGENT-TOKEN'
+    HELM_INSTALL_ARGS: --set config.token='FAKE-AGENT-TOKEN'
+    HELM_UPGRADE_ARGS: $HELM_INSTALL_ARGS
 
 test:breaking:upgrade:secret:
   extends: .k3s
   script:
+    - *create_secret
     - *helm_install_published_chart
     - *helm_upgrade_from_local_dir
   variables:
-    CONFIG_VALUE: config.secretName='test-secret'
+    HELM_INSTALL_ARGS: --set config.secretName='test-secret'
+    HELM_UPGRADE_ARGS: $HELM_INSTALL_ARGS
 
 test:breaking:upgrade:token:
   extends: .k3s
@@ -89,7 +95,8 @@ test:breaking:upgrade:token:
     - *helm_install_published_chart
     - *helm_upgrade_from_local_dir
   variables:
-    CONFIG_VALUE: config.token='FAKE-AGENT-TOKEN'
+    HELM_INSTALL_ARGS: --set config.token='FAKE-AGENT-TOKEN'
+    HELM_UPGRADE_ARGS: $HELM_INSTALL_ARGS
 
 .k3s:
   stage: test
