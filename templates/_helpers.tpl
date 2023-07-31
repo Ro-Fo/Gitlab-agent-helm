@@ -67,13 +67,25 @@ Secret Name
 Common annotations
 */}}
 {{- define "gitlab-agent.annotations" -}}
-{{- with .Values.config.token }}
+{{- $ := index . 0 }}
+{{- $annotations := index . 1 }}
+{{- $observability := $.Values.config.observability.enabled }}
+{{- $token := $.Values.config.token }}
+{{- /*
+If observability is disabled, always remove the prometheus annotations to avoid Prometheus scraping a closed port
+*/ -}}
+{{- if (not $observability) }}
+{{- $annotations := unset $annotations "prometheus.io/path" }}
+{{- $annotations := unset $annotations "prometheus.io/port" }}
+{{- $annotations := unset $annotations "prometheus.io/scrape" }}
+{{- end }}
+{{- with $token }}
 {{ printf "checksum/token: %s" (. | sha256sum) }}
 {{- end }}
-{{- with .Values.podAnnotations }}
-{{ toYaml . }}
+{{- with $annotations }}
+{{ toYaml $annotations }}
 {{- end }}
-{{- if and (not .Values.config.token) (not .Values.podAnnotations) }}
+{{- if and (not $token) (not $annotations) }}
 {{ printf "{}" -}}
 {{- end }}
 {{- end }}

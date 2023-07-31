@@ -1,3 +1,11 @@
+{{- /*
+NOTE: The pod annotations need to be able to be overridden from values, and prometheus annotations need
+to be removed if observability is turned off in values, so this variable simplifies doing so.
+See below links for context:
+https://stackoverflow.com/questions/72956149/does-not-resolve-to-the-root-context-from-within-a-helm-template
+https://gitlab.com/gitlab-org/charts/gitlab-agent/-/merge_requests/80
+*/ -}}
+{{- $podAnnotations := (list $ .Values.podAnnotations) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,7 +29,7 @@ spec:
   template:
     metadata:
       annotations:
-        {{- include "gitlab-agent.annotations" . | indent 8 }}
+        {{- include "gitlab-agent.annotations" $podAnnotations | indent 8 }}
       labels:
         {{- include "gitlab-agent.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
