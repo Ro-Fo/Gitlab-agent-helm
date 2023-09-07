@@ -69,12 +69,12 @@ Common annotations
 {{- define "gitlab-agent.annotations" -}}
 {{- $ := index . 0 }}
 {{- $annotations := index . 1 }}
-{{- $observability := $.Values.config.observability.enabled }}
+{{- $observabilityEnabled := ($.Values.config.observability).enabled }}
 {{- $token := $.Values.config.token }}
 {{- /*
 If observability is disabled, always remove the prometheus annotations to avoid Prometheus scraping a closed port
 */ -}}
-{{- if (not $observability) }}
+{{- if (not $observabilityEnabled) }}
 {{- $annotations := unset $annotations "prometheus.io/path" }}
 {{- $annotations := unset $annotations "prometheus.io/port" }}
 {{- $annotations := unset $annotations "prometheus.io/scrape" }}
