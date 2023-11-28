@@ -50,6 +50,7 @@ Selector labels
 */}}
 {{- define "gitlab-agent.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "gitlab-agent.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
