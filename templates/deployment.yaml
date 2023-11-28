@@ -13,7 +13,7 @@ metadata:
   # to gracefully recreate the deployment in case there is no upgrade
   # path otherwise, e.g. when changing an immutable field.
   # see https://gitlab.com/gitlab-org/charts/gitlab-agent/-/issues/38 for ctx
-  name: {{ include "gitlab-agent.fullname" . | trunc 60 }}-v1
+  name: {{ include "gitlab-agent.fullname" . | trunc 60 }}-v2
   labels:
     {{- include "gitlab-agent.labels" . | nindent 4 }}
 spec:
