@@ -3,6 +3,7 @@ include:
 
 stages:
   - test
+  - docs
   - publish
 
 variables:
@@ -17,6 +18,24 @@ lint:helm:
   image: $HELM_INSTALL_IMAGE
   script:
     - helm lint
+
+docs:helm-docs:
+  stage: docs
+  variables:
+    GO_VERSION: "1.21.5"
+  script:
+    - wget -q https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz
+    - tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz
+    - export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    - go version
+    - go install github.com/norwoodj/helm-docs/cmd/helm-docs@latest
+    - helm-docs -s file
+    - if ! git diff --quiet; then echo "diference between README.md and values.yaml detected, please update using 'helm-docs -s file'"; exit 1; fi
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - values.yaml
+        - README.md.gotmpl
 
 publish:
   stage: publish
