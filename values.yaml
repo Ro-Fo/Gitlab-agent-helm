@@ -70,8 +70,10 @@ config:
   token:
   # -- name of the secret storing the token
   secretName:
-  # -- PEM certificate file to use to verify config.kasAddress. Useful if config.kasAddress is self-signed.
+  # -- Deprecated: use `config.kasCaCert` instead. PEM certificate file to use to verify config.kasAddress. Useful if config.kasAddress is self-signed. See https://gitlab.com/gitlab-org/cluster-integration/gitlab-agent/-/issues/451
   caCert:
+  # -- PEM certificate file to use to verify config.kasAddress. Useful if config.kasAddress is self-signed.
+  kasCaCert:
 
   observability:
     enabled: true
