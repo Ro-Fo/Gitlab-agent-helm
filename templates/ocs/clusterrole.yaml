@@ -1,0 +1,37 @@
+{{- if not ((.Values.config.operational_container_scanning).disabled) -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "gitlab-agent.ocs.clusterRoleName" . }}
+  labels:
+    {{- include "gitlab-agent.labels" . | nindent 4 }}
+rules:
+- apiGroups:
+  - batch
+  resources:
+  - cronjobs
+  - jobs
+  verbs:
+  - list
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - replicationcontrollers
+  - serviceaccounts
+  - namespaces
+  verbs:
+  - list
+  - get
+- apiGroups:
+  - "apps"
+  resources:
+  - replicasets
+  - daemonsets
+  - statefulsets
+  - deployments
+  verbs:
+  - list
+  - get
+{{- end }}

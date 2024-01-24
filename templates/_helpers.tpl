@@ -113,3 +113,31 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Expand the OCS service account name.
+*/}}
+{{- define "gitlab-agent.ocs.serviceAccountName" -}}
+{{- printf "%s-ocs-scanning-pod-sa" (include "gitlab-agent.fullname" .) }}
+{{- end }}
+
+{{/*
+Expand the OCS Role name.
+*/}}
+{{- define "gitlab-agent.ocs.roleName" -}}
+{{- printf "%s:ocs"  (include "gitlab-agent.fullname" .) }}
+{{- end }}
+
+{{/*
+Expand the OCS ClusterRole name.
+*/}}
+{{- define "gitlab-agent.ocs.clusterRoleName" -}}
+{{- printf "%s:%s:ocs" .Release.Namespace (include "gitlab-agent.fullname" .) }}
+{{- end }}
+
+{{/*
+Expand the OCS ClusterRoleBinding name.
+*/}}
+{{- define "gitlab-agent.ocs.clusterRoleBindingName" -}}
+{{- printf "%s:%s:ocs" .Release.Namespace (include "gitlab-agent.fullname" .) }}
+{{- end }}

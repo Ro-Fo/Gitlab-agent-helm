@@ -30,7 +30,7 @@ docs:helm-docs:
     - go version
     - go install github.com/norwoodj/helm-docs/cmd/helm-docs@latest
     - helm-docs -s file
-    - if ! git diff --quiet; then echo "diference between README.md and values.yaml detected, please update using 'helm-docs -s file'"; exit 1; fi
+    - if ! git diff --quiet; then echo "difference between README.md and values.yaml detected, please update using 'helm-docs -s file'"; exit 1; fi
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
