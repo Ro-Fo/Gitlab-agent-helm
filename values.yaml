@@ -91,6 +91,10 @@ config:
         # -- secret name for the observability service
         name: "gitlab-agent-observability"
 
+  operational_container_scanning:
+    # -- disables automatic RBAC creation for the operational container scanning feature
+    disabled: false
+
 # -- Add additional environment settings to the pod. Can be useful in
 # proxy environments
 extraEnv: []
@@ -137,9 +141,9 @@ additionalLabels: {}
 # -- Optional initContainers definition
 initContainers: []
 
-# -- 
-# Show the last 80 lines or 2048 bytes (whichever is smaller) of pod logs in kubectl describe output when 
-# container exits with non-zero exit code # Useful for when pod logs are cycled out of a node post-crash 
+# --
+# Show the last 80 lines or 2048 bytes (whichever is smaller) of pod logs in kubectl describe output when
+# container exits with non-zero exit code # Useful for when pod logs are cycled out of a node post-crash
 # before an operator can capture the logs
 # Valid values are 'File' which is the Kubernetes API default, or 'FallbackToLogsOnError'
 # See <https://kubernetes.io/docs/tasks/debug/debug-application/determine-reason-pod-failure/> for more information

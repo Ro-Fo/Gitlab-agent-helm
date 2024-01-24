@@ -55,7 +55,7 @@ helm upgrade  gitlab-agent gitlab/gitlab-agent --reuse-values
 | securityContext | object | `{}` | set securityContext Example `{ "capabilities": { "drop": [ "ALL" ] }, "readOnlyRootFilesystem": true, "runAsNonRoot": true, "runAsUser": 1000 }` |
 | podAnnotations | object | `{"prometheus.io/path":"/metrics","prometheus.io/port":"8080","prometheus.io/scrape":"true"}` | set podAnnotations |
 | serviceMonitor.enabled | bool | `false` | Specifies whether to create a ServiceMonitor resource for collecting Prometheus metrics |
-| config | object | `{"caCert":null,"kasAddress":"wss://kas.gitlab.com","kasCaCert":null,"kasHeaders":[],"observability":{"enabled":true,"tls":{"cert":null,"enabled":false,"key":null,"secret":{"create":false,"name":"gitlab-agent-observability"}}},"secretName":null,"token":null}` | configure the agent |
+| config | object | `{"caCert":null,"kasAddress":"wss://kas.gitlab.com","kasCaCert":null,"kasHeaders":[],"observability":{"enabled":true,"tls":{"cert":null,"enabled":false,"key":null,"secret":{"create":false,"name":"gitlab-agent-observability"}}},"operational_container_scanning":{"disabled":false},"secretName":null,"token":null}` | configure the agent |
 | config.kasAddress | string | `"wss://kas.gitlab.com"` | The user-facing URL for the in-cluster `agentk` |
 | config.kasHeaders | list | `[]` | add kas-headers Example: `[ "Cookie: gitlab-canary" ]` |
 | config.token | string | `nil` | put your agent token here |
@@ -68,6 +68,7 @@ helm upgrade  gitlab-agent gitlab/gitlab-agent --reuse-values
 | config.observability.tls.key | string | `nil` | Private key for the TLS certificate for the observability service |
 | config.observability.tls.secret.create | bool | `false` | when true, creates a certificate with values cert and key from  for the observability service |
 | config.observability.tls.secret.name | string | `"gitlab-agent-observability"` | secret name for the observability service |
+| config.operational_container_scanning.disabled | bool | `false` | disables automatic RBAC creation for the operational container scanning feature |
 | extraEnv | list | `[]` | Add additional environment settings to the pod. Can be useful in proxy environments |
 | extraArgs | list | `[]` | Add additional args settings to the pod. |
 | extraVolumeMounts | list | `[]` | Add extra volume mounts |
@@ -81,7 +82,7 @@ helm upgrade  gitlab-agent gitlab/gitlab-agent --reuse-values
 | podLabels | object | `{}` | Labels to be added to each agent pod Example: `role: developer` |
 | additionalLabels | object | `{}` | Additional labels to be added to all created objects |
 | initContainers | list | `[]` | Optional initContainers definition |
-| terminationMessagePolicy | string | `"FallbackToLogsOnError"` |  Show the last 80 lines or 2048 bytes (whichever is smaller) of pod logs in kubectl describe output when  container exits with non-zero exit code # Useful for when pod logs are cycled out of a node post-crash  before an operator can capture the logs Valid values are 'File' which is the Kubernetes API default, or 'FallbackToLogsOnError' See <https://kubernetes.io/docs/tasks/debug/debug-application/determine-reason-pod-failure/> for more information |
+| terminationMessagePolicy | string | `"FallbackToLogsOnError"` |  Show the last 80 lines or 2048 bytes (whichever is smaller) of pod logs in kubectl describe output when container exits with non-zero exit code # Useful for when pod logs are cycled out of a node post-crash before an operator can capture the logs Valid values are 'File' which is the Kubernetes API default, or 'FallbackToLogsOnError' See <https://kubernetes.io/docs/tasks/debug/debug-application/determine-reason-pod-failure/> for more information |
 
 ### Install from source
 

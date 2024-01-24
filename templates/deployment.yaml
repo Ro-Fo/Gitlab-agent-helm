@@ -108,6 +108,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.serviceAccountName
+            - name: OCS_SERVICE_ACCOUNT_NAME
+              value: {{ include "gitlab-agent.ocs.serviceAccountName" . }}
           {{- if .Values.extraEnv }}
             {{- toYaml .Values.extraEnv | nindent 12 }}
           {{- end }}
