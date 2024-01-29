@@ -141,3 +141,14 @@ Expand the OCS ClusterRoleBinding name.
 {{- define "gitlab-agent.ocs.clusterRoleBindingName" -}}
 {{- printf "%s:%s:ocs" .Release.Namespace (include "gitlab-agent.fullname" .) }}
 {{- end }}
+
+{{/*
+Returns if the OCS is enabled
+*/}}
+{{- define "gitlab-agent.ocs.enabled" -}}
+{{- if (.Values.config.operational_container_scanning).disabled -}}
+"false"
+{{- else -}}
+"true"
+{{- end -}}
+{{- end -}}

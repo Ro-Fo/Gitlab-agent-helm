@@ -108,8 +108,12 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.serviceAccountName
+            - name: OCS_ENABLED
+              value: {{  include "gitlab-agent.ocs.enabled" . }}
+            {{- if not (.Values.config.operational_container_scanning).disabled }}
             - name: OCS_SERVICE_ACCOUNT_NAME
               value: {{ include "gitlab-agent.ocs.serviceAccountName" . }}
+            {{- end }}
           {{- if .Values.extraEnv }}
             {{- toYaml .Values.extraEnv | nindent 12 }}
           {{- end }}
