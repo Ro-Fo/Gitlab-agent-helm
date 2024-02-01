@@ -1,4 +1,4 @@
-{{- if not ((.Values.config.operational_container_scanning).disabled) -}}
+{{- if ((.Values.config.operational_container_scanning).enabled) -}}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:

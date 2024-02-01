@@ -55,7 +55,7 @@ helm upgrade  gitlab-agent gitlab/gitlab-agent --reuse-values
 | securityContext | object | `{}` | set securityContext Example `{ "capabilities": { "drop": [ "ALL" ] }, "readOnlyRootFilesystem": true, "runAsNonRoot": true, "runAsUser": 1000 }` |
 | podAnnotations | object | `{"prometheus.io/path":"/metrics","prometheus.io/port":"8080","prometheus.io/scrape":"true"}` | set podAnnotations |
 | serviceMonitor.enabled | bool | `false` | Specifies whether to create a ServiceMonitor resource for collecting Prometheus metrics |
-| config | object | `{"caCert":null,"kasAddress":"wss://kas.gitlab.com","kasCaCert":null,"kasHeaders":[],"observability":{"enabled":true,"tls":{"cert":null,"enabled":false,"key":null,"secret":{"create":false,"name":"gitlab-agent-observability"}}},"operational_container_scanning":{"disabled":false},"secretName":null,"token":null}` | configure the agent |
+| config | object | `{"caCert":null,"kasAddress":"wss://kas.gitlab.com","kasCaCert":null,"kasHeaders":[],"observability":{"enabled":true,"tls":{"cert":null,"enabled":false,"key":null,"secret":{"create":false,"name":"gitlab-agent-observability"}}},"operational_container_scanning":{"enabled":true},"secretName":null,"token":null}` | configure the agent |
 | config.kasAddress | string | `"wss://kas.gitlab.com"` | The user-facing URL for the in-cluster `agentk` |
 | config.kasHeaders | list | `[]` | add kas-headers Example: `[ "Cookie: gitlab-canary" ]` |
 | config.token | string | `nil` | put your agent token here |
@@ -68,7 +68,7 @@ helm upgrade  gitlab-agent gitlab/gitlab-agent --reuse-values
 | config.observability.tls.key | string | `nil` | Private key for the TLS certificate for the observability service |
 | config.observability.tls.secret.create | bool | `false` | when true, creates a certificate with values cert and key from  for the observability service |
 | config.observability.tls.secret.name | string | `"gitlab-agent-observability"` | secret name for the observability service |
-| config.operational_container_scanning.disabled | bool | `false` | disables automatic RBAC creation for the operational container scanning feature |
+| config.operational_container_scanning.enabled | bool | `true` | enables automatic RBAC creation for the operational container scanning feature |
 | extraEnv | list | `[]` | Add additional environment settings to the pod. Can be useful in proxy environments |
 | extraArgs | list | `[]` | Add additional args settings to the pod. |
 | extraVolumeMounts | list | `[]` | Add extra volume mounts |

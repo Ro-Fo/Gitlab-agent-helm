@@ -92,8 +92,8 @@ config:
         name: "gitlab-agent-observability"
 
   operational_container_scanning:
-    # -- disables automatic RBAC creation for the operational container scanning feature
-    disabled: false
+    # -- enables automatic RBAC creation for the operational container scanning feature
+    enabled: true
 
 # -- Add additional environment settings to the pod. Can be useful in
 # proxy environments
