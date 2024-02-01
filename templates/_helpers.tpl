@@ -146,9 +146,9 @@ Expand the OCS ClusterRoleBinding name.
 Returns if the OCS is enabled
 */}}
 {{- define "gitlab-agent.ocs.enabled" -}}
-{{- if (.Values.config.operational_container_scanning).disabled -}}
-"false"
-{{- else -}}
+{{- if (.Values.config.operational_container_scanning).enabled -}}
 "true"
+{{- else -}}
+"false"
 {{- end -}}
 {{- end -}}
