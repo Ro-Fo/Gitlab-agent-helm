@@ -2,8 +2,8 @@ apiVersion: v2
 name: gitlab-agent
 description: GitLab Agent for Kubernetes is a way to integrate your cluster with GitLab in a secure way.
 type: application
-version: 1.23.0
-appVersion: v16.8.0
+version: 1.24.0
+appVersion: v16.9.3
 icon: https://gitlab.com/uploads/-/system/project/avatar/34907799/kubernetes-agent.png?width=128
 home: https://gitlab.com/gitlab-org/charts/gitlab-agent
 sources:
