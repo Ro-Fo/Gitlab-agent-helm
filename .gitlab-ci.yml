@@ -40,7 +40,9 @@ docs:helm-docs:
 publish:
   stage: publish
   script:
-    - curl --request POST
+    - curl 
+      --fail-with-body
+      --request POST
       --form "token=${CHARTS_TRIGGER_TOKEN}"
       --form ref=master
       --form "variables[CHART_NAME]=${CI_PROJECT_NAME}"
