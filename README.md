@@ -55,12 +55,11 @@ helm upgrade  gitlab-agent gitlab/gitlab-agent --reuse-values
 | securityContext | object | `{}` | set securityContext Example `{ "capabilities": { "drop": [ "ALL" ] }, "readOnlyRootFilesystem": true, "runAsNonRoot": true, "runAsUser": 1000 }` |
 | podAnnotations | object | `{"prometheus.io/path":"/metrics","prometheus.io/port":"8080","prometheus.io/scrape":"true"}` | set podAnnotations |
 | serviceMonitor.enabled | bool | `false` | Specifies whether to create a ServiceMonitor resource for collecting Prometheus metrics |
-| config | object | `{"caCert":null,"kasAddress":"wss://kas.gitlab.com","kasCaCert":null,"kasHeaders":[],"observability":{"enabled":true,"tls":{"cert":null,"enabled":false,"key":null,"secret":{"create":false,"name":"gitlab-agent-observability"}}},"operational_container_scanning":{"enabled":true},"secretName":null,"token":null}` | configure the agent |
+| config | object | `{"kasAddress":"wss://kas.gitlab.com","kasCaCert":null,"kasHeaders":[],"observability":{"enabled":true,"tls":{"cert":null,"enabled":false,"key":null,"secret":{"create":false,"name":"gitlab-agent-observability"}}},"operational_container_scanning":{"enabled":true},"secretName":null,"token":null}` | configure the agent |
 | config.kasAddress | string | `"wss://kas.gitlab.com"` | The user-facing URL for the in-cluster `agentk` |
 | config.kasHeaders | list | `[]` | add kas-headers Example: `[ "Cookie: gitlab-canary" ]` |
 | config.token | string | `nil` | put your agent token here |
 | config.secretName | string | `nil` | name of the secret storing the token |
-| config.caCert | string | `nil` | Deprecated: use `config.kasCaCert` instead. PEM certificate file to use to verify config.kasAddress. Useful if config.kasAddress is self-signed. See https://gitlab.com/gitlab-org/cluster-integration/gitlab-agent/-/issues/451 |
 | config.kasCaCert | string | `nil` | PEM certificate file to use to verify config.kasAddress. Useful if config.kasAddress is self-signed. |
 | config.observability.tls | object | `{"cert":null,"enabled":false,"key":null,"secret":{"create":false,"name":"gitlab-agent-observability"}}` | Application-level TLS configuration for the observability service |
 | config.observability.tls.enabled | bool | `false` | enable application-level TLS for the observability service |
