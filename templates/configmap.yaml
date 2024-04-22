@@ -1,4 +1,4 @@
-{{- if or .Values.config.kasCaCert .Values.config.caCert }}
+{{- if .Values.config.kasCaCert }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,5 +6,5 @@ metadata:
   labels:
     {{- include "gitlab-agent.labels" . | nindent 4 }}
 data:
-  ca.crt: {{ .Values.config.kasCaCert | default .Values.config.caCert | quote }}
+  ca.crt: {{ .Values.config.kasCaCert | quote }}
 {{- end }}

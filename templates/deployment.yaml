@@ -59,8 +59,6 @@ spec:
             - --kas-address={{ .Values.config.kasAddress }}
             {{- if .Values.config.kasCaCert }}
             - --kas-ca-cert-file=/etc/agentk/config/ca.crt
-            {{- else if .Values.config.caCert }}
-            - --ca-cert-file=/etc/agentk/config/ca.crt
             {{- end }}
             {{- if ((.Values.config.observability).tls).enabled }}
             - --observability-cert-file=/etc/agentk/observability-secrets/tls.crt
@@ -131,7 +129,7 @@ spec:
               mountPath: /etc/agentk/observability-secrets
               readOnly: true
             {{- end }}
-            {{- if or .Values.config.kasCaCert .Values.config.caCert }}
+            {{- if .Values.config.kasCaCert }}
             - name: config-volume
               mountPath: /etc/agentk/config
               readOnly: true
@@ -171,7 +169,7 @@ spec:
             defaultMode: 0444
             secretName: {{ include "gitlab-agent.observabilitySecretName" . }}
         {{- end }}
-        {{- if or .Values.config.kasCaCert .Values.config.caCert }}
+        {{- if .Values.config.kasCaCert }}
         - name: config-volume
           configMap:
             defaultMode: 0444
