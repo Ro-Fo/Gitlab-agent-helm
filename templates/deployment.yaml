@@ -112,6 +112,18 @@ spec:
             - name: OCS_SERVICE_ACCOUNT_NAME
               value: {{ include "gitlab-agent.ocs.serviceAccountName" . }}
             {{- end }}
+            {{- if (.Values.resources.limits).cpu }}
+            - name: GOMAXPROCS
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.cpu
+            {{- end }}
+            {{- if (.Values.resources.limits).memory }}
+            - name: GOMEMLIMIT
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.memory
+            {{- end }}
           {{- if .Values.extraEnv }}
             {{- toYaml .Values.extraEnv | nindent 12 }}
           {{- end }}
