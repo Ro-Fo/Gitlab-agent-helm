@@ -1,6 +1,10 @@
 include:
   - template: Workflows/MergeRequest-Pipelines.gitlab-ci.yml
 
+default:
+  tags:
+    - gitlab-org
+
 stages:
   - test
   - docs
@@ -125,6 +129,8 @@ test:breaking:upgrade:token:
   services:
     - name: registry.gitlab.com/gitlab-org/cluster-integration/test-utils/k3s-gitlab-ci/releases/v1.25.0-k3s1
       alias: k3s
+  tags:
+    - gitlab-org-docker
   before_script:
     - apk add --update --no-cache curl
     # NOTE: libcurl in the job image is v7.x which is too old for the installed curl v7.x
