@@ -1,0 +1,3 @@
+# settings for Jetbrains IDEs
+/.idea/**
+!/.idea/icon.svg
