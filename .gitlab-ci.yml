@@ -11,7 +11,7 @@ stages:
   - publish
 
 variables:
-  HELM_INSTALL_IMAGE: registry.gitlab.com/gitlab-org/cluster-integration/helm-install-image:helm-3.10.2-kube-1.24.8-alpine-3.15
+  HELM_INSTALL_IMAGE: registry.gitlab.com/gitlab-org/cluster-integration/helm-install-image:v0.450-helm-3.14.4-kube-1.29.4-alpine-3.19.1
 
   # TEST CONFIGURATION
   CHART_NAME: 'gitlab/gitlab-agent'
@@ -127,7 +127,7 @@ test:breaking:upgrade:token:
   stage: test
   image: $HELM_INSTALL_IMAGE
   services:
-    - name: registry.gitlab.com/gitlab-org/cluster-integration/test-utils/k3s-gitlab-ci/releases/v1.25.0-k3s1
+    - name: registry.gitlab.com/gitlab-org/cluster-integration/test-utils/k3s-gitlab-ci/releases/v1.29.0-k3s1
       alias: k3s
   tags:
     - gitlab-org-docker
