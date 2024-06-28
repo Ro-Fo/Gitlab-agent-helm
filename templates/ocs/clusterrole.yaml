@@ -21,6 +21,11 @@ rules:
   - replicationcontrollers
   - serviceaccounts
   - namespaces
+  - services
+  - configmaps
+  - resourcequotas
+  - limitranges
+  - nodes
   verbs:
   - list
   - get
@@ -31,6 +36,24 @@ rules:
   - daemonsets
   - statefulsets
   - deployments
+  verbs:
+  - list
+  - get
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - roles
+  - rolebindings
+  - clusterroles
+  - clusterrolebindings
+  verbs:
+  - list
+  - get
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - networkpolicies
+  - ingresses
   verbs:
   - list
   - get
