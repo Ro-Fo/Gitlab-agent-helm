@@ -77,6 +77,7 @@ helm upgrade  gitlab-agent gitlab/gitlab-agent --reuse-values
 | tolerations | list | `[]` | tolerations |
 | affinity | object | `{}` | set affinity |
 | priorityClassName | string | `""` | set priorityClassName |
+| runtimeClassName | string | `""` | set runtimeClassName |
 | hostAliases | list | `[]` | list of hosts and IPs that will be injected into the pod's hosts file Example: `[{ "ip": "127.0.0.1", "hostnames": [ "foo.local", "bar.local" ]}, { "ip": "10.1.2.3", "hostnames": [ "foo.remote", "bar.remote" ]}]` |
 | podLabels | object | `{}` | Labels to be added to each agent pod Example: `role: developer` |
 | additionalLabels | object | `{}` | Additional labels to be added to all created objects |
