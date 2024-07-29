@@ -34,14 +34,14 @@ helm upgrade  gitlab-agent gitlab/gitlab-agent --reuse-values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| image | object | `{"pullPolicy":"IfNotPresent","repository":"registry.gitlab.com/gitlab-org/cluster-integration/gitlab-agent/agentk","tag":""}` | confiure the used image |
+| image | object | `{"pullPolicy":"IfNotPresent","repository":"registry.gitlab.com/gitlab-org/cluster-integration/gitlab-agent/agentk","tag":""}` | configure the used image |
 | image.repository | string | `"registry.gitlab.com/gitlab-org/cluster-integration/gitlab-agent/agentk"` | used image repository |
 | image.pullPolicy | string | `"IfNotPresent"` | set the `pullPolicy` |
 | image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion. |
 | imagePullSecrets | list | `[]` | Optionally set `imagePullSecrets` |
 | nameOverride | string | `""` | Override the default chart name |
 | fullnameOverride | string | `""` | Override the full chart name |
-| replicas | int | `2` | set numer of replicas |
+| replicas | int | `2` | set number of replicas |
 | maxSurge | int | `1` | set maxSurge for rolling update |
 | maxUnavailable | int | `0` | set maxUnavailable for rolling update |
 | rbac | object | `{"create":true,"useExistingRole":null}` | rbac settings |
@@ -72,7 +72,7 @@ helm upgrade  gitlab-agent gitlab/gitlab-agent --reuse-values
 | extraArgs | list | `[]` | Add additional args settings to the pod. |
 | extraVolumeMounts | list | `[]` | Add extra volume mounts |
 | extraVolumes | list | `[]` | Add extra volumes |
-| resources | object | `{}` | set resource parmeters Example: `{ "limits": { "cpu": "100m", "memory": "128Mi" }, "requests": { "cpu": "100m", "memory": "128Mi" }}` |
+| resources | object | `{}` | set resource parameters Example: `{ "limits": { "cpu": "100m", "memory": "128Mi" }, "requests": { "cpu": "100m", "memory": "128Mi" }}` |
 | nodeSelector | object | `{}` | nodeSelector |
 | tolerations | list | `[]` | tolerations |
 | affinity | object | `{}` | set affinity |

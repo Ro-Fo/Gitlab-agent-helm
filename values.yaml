@@ -1,4 +1,4 @@
-# -- confiure the used image
+# -- configure the used image
 image:
   # -- used image repository
   repository: "registry.gitlab.com/gitlab-org/cluster-integration/gitlab-agent/agentk"
@@ -14,7 +14,7 @@ nameOverride: ""
 # -- Override the full chart name
 fullnameOverride: ""
 
-# -- set numer of replicas
+# -- set number of replicas
 replicas: 2
 # -- set maxSurge for rolling update
 maxSurge: 1
@@ -106,7 +106,7 @@ extraVolumeMounts: []
 # -- Add extra volumes
 extraVolumes: []
 
-# -- set resource parmeters
+# -- set resource parameters
 # Example:
 # `{ "limits": { "cpu": "100m", "memory": "128Mi" }, "requests": { "cpu": "100m", "memory": "128Mi" }}`
 resources: {}
