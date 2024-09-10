@@ -1,0 +1,39 @@
+{{- if or
+    (.Values.config.receptive).enabled
+    .Values.config.observability.enabled
+-}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "gitlab-agent.serviceName" . }}
+  labels:
+    {{- include "gitlab-agent.labels" . | nindent 4 }}
+spec:
+  type: {{ (.Values.service).type | quote }}
+  {{- if (eq (.Values.service).type "LoadBalancer") }}
+    {{- if (.Values.service).loadBalancerIP }}
+  loadBalancerIP: {{ (.Values.service).loadBalancerIP | quote }}
+    {{- end }}
+    {{- if (.Values.service).loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+      {{- range (.Values.service).loadBalancerSourceRanges }}
+  - {{ . | quote }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  ports:
+    {{- if (.Values.config.receptive).enabled }}
+    - port: {{ (.Values.service).externalPort | default 8182 }}
+      targetPort: {{ (.Values.service).internalPort | default 8082 }}
+      protocol: TCP
+      name: tcp-{{ include "gitlab-agent.name" . }}-external-api
+    {{- end }}
+    {{- if .Values.config.observability.enabled }}
+    - port: 8080
+      targetPort: observability
+      protocol: TCP
+      name: tcp-{{ include "gitlab-agent.name" . }}-observability
+    {{- end }}
+  selector:
+    {{- include "gitlab-agent.selectorLabels" . | nindent 4 }}
+{{- end -}}

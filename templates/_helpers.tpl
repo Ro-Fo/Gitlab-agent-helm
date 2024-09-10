@@ -46,11 +46,31 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
+Agent Pod labels in YAML format
+*/}}
+{{- define "gitlab-agent.agentPodLabels" -}}
+{{- $labels := (include "gitlab-agent.labels" . | fromYaml) -}}
+{{- if .Values.podLabels }}
+{{- $labels = merge $labels .Values.podLabels -}}
+{{- end }}
+{{- $labels | toYaml -}}
+{{- end }}
+
+{{/*
 Selector labels
 */}}
 {{- define "gitlab-agent.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "gitlab-agent.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+selectorLabelsStr returns a string of the selector labels in the format of key1=value1,key2=value2
+*/}}
+{{- define "gitlab-agent.selectorLabelsStr" -}}
+{{- $labels := include "gitlab-agent.selectorLabels" . -}}
+{{- $oneLineLabels := $labels | replace "\n" "," | replace ": " "=" -}}
+{{- trimSuffix "," $oneLineLabels | trim -}}
 {{- end }}
 
 {{/*
@@ -150,5 +170,48 @@ Returns if the OCS is enabled
 "true"
 {{- else -}}
 "false"
+{{- end -}}
+{{- end -}}
+
+{{/*
+Service name
+*/}}
+{{- define "gitlab-agent.serviceName" -}}
+{{- printf "%s-service" (include "gitlab-agent.fullname" . | trunc 55) -}}
+{{- end }}
+
+{{/*
+Validate service.internalPort equals to the port that is set in config.api.listenAddress.
+*/}}
+{{- define "gitlab-agent.validateApiPort" -}}
+{{- if (.Values.config.receptive).enabled -}}
+  {{- $listenAddress := (.Values.config.api).listenAddress | toString }}
+  {{- if not (contains ":" $listenAddress) }}
+  {{- fail "config.api.listenAddress must be in the format of host:port or :port." }}
+  {{- end }}
+
+  {{- $listenPort := mustRegexSplit ":" (.Values.config.api).listenAddress -1 | last -}}
+  {{- $internalPort := (.Values.service).internalPort | toString -}}
+  {{- if ne $listenPort $internalPort -}}
+  {{- fail (printf "The service.internalPort \"%s\" must be equal to the port that is set in config.api.listenAddress \"%s\"" $internalPort $listenPort) -}}
+  {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Validate service.privateApiPort equals to the port that is set in config.privateApi.listenAddress.
+*/}}
+{{- define "gitlab-agent.validatePrivateApiPort" }}
+{{- if (.Values.config.receptive).enabled -}}
+  {{- $listenAddress := .Values.config.privateApi.listenAddress | toString }}
+  {{- if not (contains ":" $listenAddress) }}
+  {{- fail "config.privateApi.listenAddress must be in the format of host:port or :port." }}
+  {{- end }}
+
+  {{- $listenPort := mustRegexSplit ":" .Values.config.privateApi.listenAddress -1 | last -}}
+  {{- $privateApiPort := (.Values.service).privateApiPort | toString -}}
+  {{- if ne $listenPort $privateApiPort -}}
+  {{- fail (printf "service.privateApiPort \"%s\" must be equal to the port that is set in config.privateApi.listenAddress \"%s\"" $privateApiPort $listenPort) -}}
+  {{- end -}}
 {{- end -}}
 {{- end -}}

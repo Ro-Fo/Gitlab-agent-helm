@@ -93,6 +93,34 @@ config:
     # -- enables automatic RBAC creation for the operational container scanning feature
     enabled: true
 
+  receptive:
+    # -- Enable receptive agent
+    enabled: false
+
+  api:
+    # -- API network to listen on
+    listenNetwork: tcp
+    # -- API address to listen on
+    listenAddress: :8082
+    # -- Base64-encoded EdDSA public key to validate JWT tokens from kas. Used for api endpoint
+    jwtPublicKey:
+
+  privateApi:
+    # -- Private API network to listen on
+    listenNetwork: tcp
+    # -- Private API address to listen on
+    listenAddress: :8081
+
+service:
+  # -- Set the service type
+  type: ClusterIP
+  # -- Set the external port
+  externalPort: 8182
+  # -- Set the internal port
+  internalPort: 8082
+  # -- Set the private api port
+  privateApiPort: 8081
+
 # -- Add additional environment settings to the pod. Can be useful in
 # proxy environments
 extraEnv: []

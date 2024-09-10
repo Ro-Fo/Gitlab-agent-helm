@@ -6,6 +6,8 @@ https://stackoverflow.com/questions/72956149/does-not-resolve-to-the-root-contex
 https://gitlab.com/gitlab-org/charts/gitlab-agent/-/merge_requests/80
 */ -}}
 {{- $podAnnotations := (list $ .Values.podAnnotations) -}}
+{{- include "gitlab-agent.validateApiPort" . }}
+{{- include "gitlab-agent.validatePrivateApiPort" . }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -31,10 +33,7 @@ spec:
       annotations:
         {{- include "gitlab-agent.annotations" $podAnnotations | indent 8 }}
       labels:
-        {{- include "gitlab-agent.labels" . | nindent 8 }}
-        {{- with .Values.podLabels }}
-        {{-   toYaml . | nindent 8 }}
-        {{- end }}
+        {{- include "gitlab-agent.agentPodLabels" . | nindent 8 }}
     spec:
       automountServiceAccountToken: false
       {{- with .Values.imagePullSecrets }}
@@ -59,29 +58,60 @@ spec:
           terminationMessagePolicy: {{ .Values.terminationMessagePolicy }}
           args:
             - --token-file=/etc/agentk/secrets/token
+            {{- if not (.Values.config.receptive).enabled }}
             - --kas-address={{ .Values.config.kasAddress }}
-            {{- if .Values.config.kasCaCert }}
+              {{- if .Values.config.kasCaCert }}
             - --kas-ca-cert-file=/etc/agentk/config/ca.crt
+              {{- end }}
+              {{- if .Values.config.kasHeaders }}
+                {{- range .Values.config.kasHeaders }}
+            - --kas-header
+              - {{ . | quote }}
+                {{- end }}
+              {{- end }}
             {{- end }}
             {{- if ((.Values.config.observability).tls).enabled }}
             - --observability-cert-file=/etc/agentk/observability-secrets/tls.crt
             - --observability-key-file=/etc/agentk/observability-secrets/tls.key
             {{- end }}
-            {{- if .Values.config.kasHeaders }}
-            {{- range .Values.config.kasHeaders }}
-            - --kas-header
-            - {{ . | quote }}
-            {{- end }}
-            {{- end }}
             {{- range .Values.extraArgs }}
             - {{ . }}
             {{- end }}
-          {{- if (.Values.config.observability).enabled }}
+            {{- if (.Values.config.receptive).enabled }}
+              {{- if .Values.config.api.listenNetwork }}
+            - --api-listen-network={{ .Values.config.api.listenNetwork }}
+              {{- end }}
+              {{- if .Values.config.api.listenAddress }}
+            - --api-listen-address={{ .Values.config.api.listenAddress }}
+              {{- end }}
+              {{- if .Values.config.api.jwtPublicKey }}
+            - --api-jwt-file=/etc/agentk/secrets/api-jwt
+              {{- end }}
+            {{- end }}
+            {{- if (.Values.config.receptive).enabled }}
+            - --private-api-jwt-file=/etc/agentk/secrets/private-api-jwt
+              {{- if (.Values.config.privateApi).listenNetwork }}
+            - --private-api-listen-network={{ .Values.config.privateApi.listenNetwork }}
+              {{- end }}
+              {{- if (.Values.config.privateApi).listenAddress }}
+            - --private-api-listen-address={{ .Values.config.privateApi.listenAddress }}
+              {{- end }}
+            {{- end }}
           ports:
             - name: observability
               containerPort: 8080
               protocol: TCP
-          {{- end }}
+            {{- if (.Values.config.receptive).enabled }}
+            - containerPort: {{ .Values.service.privateApiPort }}
+              name: private-api
+            {{- end }}
+            {{- if and
+                (or (.Values.config.receptive).enabled .Values.config.observability.enabled)
+                (.Values.service).internalPort
+            }}
+            - containerPort: {{ (.Values.service).internalPort }}
+              name: api
+            {{- end }}
           livenessProbe:
             httpGet:
               path: /liveness
@@ -105,6 +135,16 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            {{- if (.Values.config.receptive).enabled }}
+            - name: OWN_PRIVATE_API_URL
+              value: "grpc://$(POD_IP):{{ .Values.service.privateApiPort }}"
+            - name: POD_SELECTOR_LABELS
+              value: {{ include "gitlab-agent.selectorLabelsStr" . }}
+            {{- end }}
             - name: SERVICE_ACCOUNT_NAME
               valueFrom:
                 fieldRef:
@@ -134,7 +174,12 @@ spec:
             - name: service-account-token-volume
               mountPath: /var/run/secrets/kubernetes.io/serviceaccount
               readOnly: true
-            {{- if or .Values.config.token .Values.config.secretName }}
+            {{- if or
+                .Values.config.token
+                .Values.config.secretName
+                (.Values.config.api).jwtPublicKey
+                (.Values.config.receptive).enabled
+             }}
             - name: secret-volume
               mountPath: /etc/agentk/secrets
               readOnly: true
@@ -172,7 +217,12 @@ spec:
             - serviceAccountToken:
                 expirationSeconds: 3600
                 path: token
-        {{- if or .Values.config.token .Values.config.secretName }}
+        {{- if or
+            .Values.config.token
+            .Values.config.secretName
+            (.Values.config.api).jwtPublicKey
+            (.Values.config.receptive).enabled
+        }}
         - name: secret-volume
           secret:
             defaultMode: 0444

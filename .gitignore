@@ -1,3 +1,4 @@
-# settings for Jetbrains IDEs
 /.idea/**
 !/.idea/icon.svg
+.DS_Store
+Chart.lock
