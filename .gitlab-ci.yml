@@ -17,6 +17,7 @@ variables:
   CHART_NAME: 'gitlab/gitlab-agent'
   CHART_RELEASE_NAME: 'gitlab-agent'
   CHART_VALUE_KAS_ADDRESS: 'wss://kas.gitlab.example.com'
+  JWT_PUBLIC_KEY: 'RmFrZUFQSUpXVAo='
 
 lint:helm:
   image: $HELM_INSTALL_IMAGE
@@ -34,7 +35,7 @@ docs:helm-docs:
     - go version
     - go install github.com/norwoodj/helm-docs/cmd/helm-docs@latest
     - helm-docs -s file
-    - if ! git diff --quiet; then echo "difference between README.md and values.yaml detected, please update using 'helm-docs -s file'"; exit 1; fi
+    - if ! git diff --quiet; then echo "difference between README.md and values.yaml detected, please update using 'helm-docs -s file'"; git diff; exit 1; fi
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
@@ -85,6 +86,18 @@ test:local:install:token:
   variables:
     HELM_INSTALL_ARGS: --set config.token='FAKE-AGENT-TOKEN'
 
+test:local:install:receptive_enabled:
+  extends: .k3s
+  script:
+    - *helm_install_from_local_dir
+  variables:
+    # TODO: Remove image.tag once we have a 17.4.0 release
+    HELM_INSTALL_ARGS: |
+      --set config.token='FAKE-AGENT-TOKEN'
+      --set config.receptive.enabled=true
+      --set config.api.jwtPublicKey=$JWT_PUBLIC_KEY
+      --set image.tag=v17.4.0-rc1-debug
+
 test:local:upgrade:secret:
   extends: .k3s
   script:
@@ -104,6 +117,20 @@ test:local:upgrade:token:
     HELM_INSTALL_ARGS: --set config.token='FAKE-AGENT-TOKEN'
     HELM_UPGRADE_ARGS: $HELM_INSTALL_ARGS
 
+test:local:upgrade:receptive_enabled:
+  extends: .k3s
+  script:
+    - *helm_install_from_local_dir
+    - *helm_upgrade_from_local_dir
+  variables:
+    # TODO: Remove image.tag once we have a 17.4.0 release
+    HELM_INSTALL_ARGS: |
+      --set config.token='FAKE-AGENT-TOKEN'
+      --set config.receptive.enabled=true
+      --set config.api.jwtPublicKey=$JWT_PUBLIC_KEY
+      --set image.tag=v17.4.0-rc1-debug
+    HELM_UPGRADE_ARGS: $HELM_INSTALL_ARGS
+
 test:breaking:upgrade:secret:
   extends: .k3s
   script:
@@ -121,6 +148,24 @@ test:breaking:upgrade:token:
     - *helm_upgrade_from_local_dir
   variables:
     HELM_INSTALL_ARGS: --set config.token='FAKE-AGENT-TOKEN'
+    HELM_UPGRADE_ARGS: $HELM_INSTALL_ARGS
+
+test:breaking:upgrade:receptive_enabled:
+  extends: .k3s
+  script:
+    - *helm_install_published_chart
+    - *helm_upgrade_from_local_dir
+  variables:
+    # TODO: Remove image.tag once we have a 17.4.0 release
+    HELM_INSTALL_ARGS: |
+      --set config.token='FAKE-AGENT-TOKEN'
+      --set config.receptive.enabled=true
+      --set config.api.jwtPublicKey=$JWT_PUBLIC_KEY
+      --set image.tag=v17.4.0-rc1-debug
+      --set config.api.listenAddress=:8082
+      --set service.internalPort=8082
+      --set config.privateApi.listenAddress=:8081
+      --set service.privateApiPort=8081
     HELM_UPGRADE_ARGS: $HELM_INSTALL_ARGS
 
 .k3s:
