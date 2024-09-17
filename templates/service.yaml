@@ -9,7 +9,7 @@ metadata:
   labels:
     {{- include "gitlab-agent.labels" . | nindent 4 }}
 spec:
-  type: {{ (.Values.service).type | quote }}
+  type: {{ (.Values.service).type | default "ClusterIP" }}
   {{- if (eq (.Values.service).type "LoadBalancer") }}
     {{- if (.Values.service).loadBalancerIP }}
   loadBalancerIP: {{ (.Values.service).loadBalancerIP | quote }}

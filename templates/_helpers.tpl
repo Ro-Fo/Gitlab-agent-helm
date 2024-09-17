@@ -215,3 +215,10 @@ Validate service.privateApiPort equals to the port that is set in config.private
   {{- end -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Ingress name
+*/}}
+{{- define "gitlab-agent.ingressName" -}}
+{{- printf "%s-ingress" (include "gitlab-agent.fullname" .) -}}
+{{- end }}

@@ -9,3 +9,8 @@ home: https://gitlab.com/gitlab-org/charts/gitlab-agent
 sources:
   - https://gitlab.com/gitlab-org/charts/gitlab-agent
   - https://gitlab.com/gitlab-org/cluster-integration/gitlab-agent
+dependencies:
+  - name: ingress-nginx
+    condition: ingress-nginx.enabled
+    repository: https://kubernetes.github.io/ingress-nginx
+    version: '*.*.*'

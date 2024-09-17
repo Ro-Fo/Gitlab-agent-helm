@@ -78,6 +78,12 @@ helm upgrade  gitlab-agent gitlab/gitlab-agent --reuse-values
 | service.externalPort | int | `8182` | Set the external port |
 | service.internalPort | int | `8082` | Set the internal port |
 | service.privateApiPort | int | `8081` | Set the private api port |
+| ingress.enabled | bool | `false` |  |
+| ingress.provider | string | `"nginx"` |  |
+| ingress.annotations | object | `{}` |  |
+| ingress.hostname | string | `"agent.example.com"` |  |
+| ingress-nginx.enabled | bool | `false` |  |
+| ingress-nginx.controller.ingressClassResource.name | string | `"gitlab-agent-nginx"` |  |
 | extraEnv | list | `[]` | Add additional environment settings to the pod. Can be useful in proxy environments |
 | extraArgs | list | `[]` | Add additional args settings to the pod. |
 | extraVolumeMounts | list | `[]` | Add extra volume mounts |

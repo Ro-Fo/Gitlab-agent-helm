@@ -1,4 +1,5 @@
 /.idea/**
 !/.idea/icon.svg
 .DS_Store
+charts/
 Chart.lock
