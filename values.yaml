@@ -121,6 +121,18 @@ service:
   # -- Set the private api port
   privateApiPort: 8081
 
+ingress:
+  enabled: false
+  provider: nginx
+  annotations: {}
+  hostname: agent.example.com # TODO: change to your domain
+
+ingress-nginx:
+  enabled: false
+  controller:
+    ingressClassResource:
+      name: "gitlab-agent-nginx"
+
 # -- Add additional environment settings to the pod. Can be useful in
 # proxy environments
 extraEnv: []

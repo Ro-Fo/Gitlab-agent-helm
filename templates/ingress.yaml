@@ -1,0 +1,33 @@
+{{- if and
+    (.Values.config.receptive).enabled
+    ((.Values.ingress).enabled)
+-}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "gitlab-agent.ingressName" . }}
+  labels:
+    {{- include "gitlab-agent.labels" . | nindent 4 }}
+  annotations:
+  {{- if eq "nginx" (.Values.ingress).provider }}
+    nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    nginx.ingress.kubernetes.io/custom-http-errors: ""
+  {{- end }}
+  {{- range $key, $value := ((.Values.ingress).annotations | default dict) }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+spec:
+  ingressClassName: "gitlab-agent-nginx"
+  rules:
+    - host: {{ (.Values.ingress).hostname }}
+      http:
+        paths:
+          - path: "/"
+            pathType: "Prefix"
+            backend:
+              service:
+                name: {{ include "gitlab-agent.serviceName" . }}
+                port:
+                  number: {{ (.Values.service).externalPort | default 8182}}
+{{- end -}}

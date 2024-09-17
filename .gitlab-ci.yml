@@ -17,7 +17,7 @@ variables:
   CHART_NAME: 'gitlab/gitlab-agent'
   CHART_RELEASE_NAME: 'gitlab-agent'
   CHART_VALUE_KAS_ADDRESS: 'wss://kas.gitlab.example.com'
-  JWT_PUBLIC_KEY: 'RmFrZUFQSUpXVAo='
+  JWT_PUBLIC_KEY: 'RmFrZUFQSUpXVAo=' # Random key for testing purposes
 
 lint:helm:
   image: $HELM_INSTALL_IMAGE
@@ -61,15 +61,27 @@ publish:
   - kubectl create secret generic test-secret --from-literal=token='FAKE-AGENT-TOKEN'
 
 .helm_install_from_local_dir: &helm_install_from_local_dir
-  - helm install "$CHART_RELEASE_NAME" . --wait --set config.kasAddress="$CHART_VALUE_KAS_ADDRESS" $HELM_INSTALL_ARGS
+  - helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+  - helm repo update
+  - helm dependency build
+  - helm install "$CHART_RELEASE_NAME" . --wait --debug --set config.kasAddress="$CHART_VALUE_KAS_ADDRESS" $HELM_INSTALL_ARGS
 
 .helm_install_published_chart: &helm_install_published_chart
   - helm repo add gitlab https://charts.gitlab.io
+  - helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
   - helm repo update
-  - helm install "$CHART_RELEASE_NAME" "$CHART_NAME" --wait --set config.kasAddress="$CHART_VALUE_KAS_ADDRESS" $HELM_INSTALL_ARGS
+  - helm dependency build
+  - helm install "$CHART_RELEASE_NAME" "$CHART_NAME" --wait --debug --set config.kasAddress="$CHART_VALUE_KAS_ADDRESS" $HELM_INSTALL_ARGS
+  - helm get values "$CHART_RELEASE_NAME"
 
+# NOTE: We use `-f` to pass the value file when upgrading.
+# We do not recommend using `--reuse-values` as it can lead to unexpected behavior.
+# See: https://docs.gitlab.com/ee/user/clusters/agent/install/#update-the-agent-version
 .helm_upgrade_from_local_dir: &helm_upgrade_from_local_dir
-  - helm upgrade $CHART_RELEASE_NAME . --wait --reuse-values
+  - helm dependency build
+  - helm get values $CHART_RELEASE_NAME > agent-values.yaml
+  - cat agent-values.yaml
+  - helm upgrade $CHART_RELEASE_NAME . --wait --debug -f agent-values.yaml
 
 test:local:install:secret:
   extends: .k3s
@@ -97,6 +109,23 @@ test:local:install:receptive_enabled:
       --set config.receptive.enabled=true
       --set config.api.jwtPublicKey=$JWT_PUBLIC_KEY
       --set image.tag=v17.4.0-rc1-debug
+
+test:local:install:receptive_enabled_with_ingress:
+  extends: .k3s
+  script:
+    - *helm_install_from_local_dir
+  variables:
+    # TODO: Remove image.tag once we have a 17.4.0 release
+    HELM_INSTALL_ARGS: |
+      --set image.tag=v17.4.0-rc1-debug
+      --set config.token='FAKE-AGENT-TOKEN'
+      --set config.receptive.enabled=true
+      --set config.api.jwtPublicKey=$JWT_PUBLIC_KEY
+      --set ingress.enabled=true
+      --set ingress.hostname=agent.gitlab.example.com
+      --set ingress-nginx.enabled=true
+      --set ingress-nginx.controller.service.type=ClusterIP
+      --set ingress-nginx.controller.service.externalTrafficPolicy=""
 
 test:local:upgrade:secret:
   extends: .k3s
@@ -130,6 +159,24 @@ test:local:upgrade:receptive_enabled:
       --set config.api.jwtPublicKey=$JWT_PUBLIC_KEY
       --set image.tag=v17.4.0-rc1-debug
     HELM_UPGRADE_ARGS: $HELM_INSTALL_ARGS
+
+test:local:upgrade:receptive_enabled_with_ingress:
+  extends: .k3s
+  script:
+    - *helm_install_from_local_dir
+    - *helm_upgrade_from_local_dir
+  variables:
+    # TODO: Remove image.tag once we have a 17.4.0 release
+    HELM_INSTALL_ARGS: |
+      --set image.tag=v17.4.0-rc1-debug
+      --set config.token='FAKE-AGENT-TOKEN'
+      --set config.receptive.enabled=true
+      --set config.api.jwtPublicKey=$JWT_PUBLIC_KEY
+      --set ingress.enabled=true
+      --set ingress.hostname=agent.gitlab.example.com
+      --set ingress-nginx.enabled=true
+      --set ingress-nginx.controller.service.type=ClusterIP
+      --set ingress-nginx.controller.service.externalTrafficPolicy=""
 
 test:breaking:upgrade:secret:
   extends: .k3s
@@ -167,6 +214,24 @@ test:breaking:upgrade:receptive_enabled:
       --set config.privateApi.listenAddress=:8081
       --set service.privateApiPort=8081
     HELM_UPGRADE_ARGS: $HELM_INSTALL_ARGS
+
+test:breaking:upgrade:receptive_enabled_with_ingress:
+  extends: .k3s
+  script:
+    - *helm_install_published_chart
+    - *helm_upgrade_from_local_dir
+  variables:
+    # TODO: Remove image.tag once we have a 17.4.0 release
+    HELM_INSTALL_ARGS: |
+      --set image.tag=v17.4.0-rc1-debug
+      --set config.token='FAKE-AGENT-TOKEN'
+      --set config.receptive.enabled=true
+      --set config.api.jwtPublicKey=$JWT_PUBLIC_KEY
+      --set ingress.enabled=true
+      --set ingress.hostname=agent.gitlab.example.com
+      --set ingress-nginx.enabled=true
+      --set ingress-nginx.controller.service.type=ClusterIP
+      --set ingress-nginx.controller.service.externalTrafficPolicy=""
 
 .k3s:
   stage: test
