@@ -222,3 +222,10 @@ Ingress name
 {{- define "gitlab-agent.ingressName" -}}
 {{- printf "%s-ingress" (include "gitlab-agent.fullname" .) -}}
 {{- end }}
+
+{{/*
+Own Private API Scheme
+*/}}
+{{- define "gitlab-agent.ownPrivateApi.scheme" -}}
+{{- printf "%s" (ternary "grpcs" "grpc" (eq $.Values.config.privateApi.tls.enabled true)) -}}
+{{- end }}

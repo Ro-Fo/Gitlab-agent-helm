@@ -30,4 +30,10 @@ spec:
                 name: {{ include "gitlab-agent.serviceName" . }}
                 port:
                   number: {{ (.Values.service).externalPort | default 8182}}
+  {{- if and (.Values.config.api.tls.enabled) (((.Values.ingress).tls).enabled)  }}
+  tls:
+    - hosts:
+      - {{ (.Values.ingress).hostname }}
+      secretName: {{ include "gitlab-agent.secretName" . }}
+  {{- end }}
 {{- end -}}
