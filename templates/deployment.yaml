@@ -87,6 +87,14 @@ spec:
               {{- if .Values.config.api.jwtPublicKey }}
             - --api-jwt-file=/etc/agentk/secrets/api-jwt
               {{- end }}
+              {{- if and (.Values.config.api.tls.enabled) (not ((.Values.ingress).tls).enabled)  }}
+                {{- if .Values.config.api.tls.cert }}
+            - --api-cert-file=/etc/agentk/secrets/tls.crt
+                {{- end }}
+                {{- if .Values.config.api.tls.key }}
+            - --api-key-file=/etc/agentk/secrets/tls.key
+                {{- end }}
+              {{- end }}
             {{- end }}
             {{- if (.Values.config.receptive).enabled }}
             - --private-api-jwt-file=/etc/agentk/secrets/private-api-jwt
@@ -96,11 +104,24 @@ spec:
               {{- if (.Values.config.privateApi).listenAddress }}
             - --private-api-listen-address={{ .Values.config.privateApi.listenAddress }}
               {{- end }}
+              {{- if ((.Values.config.privateApi).tls).enabled }}
+                {{- if ((.Values.config.privateApi).tls).cert }}
+            - --private-api-cert-file=/etc/agentk/secrets/private-api-tls-cert
+                {{- end }}
+                {{- if ((.Values.config.privateApi).tls).key }}
+            - --private-api-key-file=/etc/agentk/secrets/private-api-tls-key
+                {{- end }}
+                {{- if ((.Values.config.privateApi).tls).caCert }}
+            - --private-api-ca-cert-file=/etc/agentk/config/private-api-ca.crt
+                {{- end }}
+              {{- end }}
             {{- end }}
           ports:
+            {{- if .Values.config.observability.enabled }}
             - name: observability
               containerPort: 8080
               protocol: TCP
+            {{- end }}
             {{- if (.Values.config.receptive).enabled }}
             - containerPort: {{ .Values.service.privateApiPort }}
               name: private-api
@@ -141,7 +162,7 @@ spec:
                   fieldPath: status.podIP
             {{- if (.Values.config.receptive).enabled }}
             - name: OWN_PRIVATE_API_URL
-              value: "grpc://$(POD_IP):{{ .Values.service.privateApiPort }}"
+              value: "{{ include "gitlab-agent.ownPrivateApi.scheme" . }}://$(POD_IP):{{ .Values.service.privateApiPort }}"
             - name: POD_SELECTOR_LABELS
               value: {{ include "gitlab-agent.selectorLabelsStr" . }}
             {{- end }}
@@ -178,6 +199,10 @@ spec:
                 .Values.config.token
                 .Values.config.secretName
                 (.Values.config.api).jwtPublicKey
+                ((.Values.config.api).tls).cert
+                ((.Values.config.api).tls).key
+                ((.Values.config.privateApi).tls).cert
+                ((.Values.config.privateApi).tls).key
                 (.Values.config.receptive).enabled
              }}
             - name: secret-volume
@@ -189,7 +214,7 @@ spec:
               mountPath: /etc/agentk/observability-secrets
               readOnly: true
             {{- end }}
-            {{- if .Values.config.kasCaCert }}
+            {{- if or .Values.config.kasCaCert ((.Values.config.privateApi).tls).caCert }}
             - name: config-volume
               mountPath: /etc/agentk/config
               readOnly: true
@@ -221,6 +246,10 @@ spec:
             .Values.config.token
             .Values.config.secretName
             (.Values.config.api).jwtPublicKey
+            ((.Values.config.api).tls).cert
+            ((.Values.config.api).tls).key
+            ((.Values.config.privateApi).tls).cert
+            ((.Values.config.privateApi).tls).key
             (.Values.config.receptive).enabled
         }}
         - name: secret-volume
@@ -234,7 +263,7 @@ spec:
             defaultMode: 0444
             secretName: {{ include "gitlab-agent.observabilitySecretName" . }}
         {{- end }}
-        {{- if .Values.config.kasCaCert }}
+        {{- if or .Values.config.kasCaCert ((.Values.config.privateApi).tls).caCert }}
         - name: config-volume
           configMap:
             defaultMode: 0444

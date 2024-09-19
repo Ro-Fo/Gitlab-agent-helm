@@ -104,12 +104,30 @@ config:
     listenAddress: :8082
     # -- Base64-encoded EdDSA public key to validate JWT tokens from kas. Used for api endpoint
     jwtPublicKey:
+    # -- API TLS configuration
+    tls:
+      # -- Enable TLS for the api endpoint
+      enabled: false
+      # -- X.509 certificate in PEM format for api endpoint TLS
+      cert:
+      # -- X.509 key in PEM format for api endpoint TLS
+      key:
 
   privateApi:
     # -- Private API network to listen on
     listenNetwork: tcp
     # -- Private API address to listen on
     listenAddress: :8081
+    # -- Private API TLS configuration
+    tls:
+      # -- Enable TLS for the private API endpoint
+      enabled: false
+      # -- X.509 certificate in PEM format for private API endpoint TLS
+      cert:
+      # -- X.509 key in PEM format for private API endpoint TLS
+      key:
+      # -- X.509 certificate authority certificate in PEM format for private API endpoint TLS
+      caCert:
 
 service:
   # -- Set the service type
@@ -122,15 +140,26 @@ service:
   privateApiPort: 8081
 
 ingress:
+  # -- enabled specifies whether to create an Ingress resource
   enabled: false
+  # -- Ingress provider
   provider: nginx
+  # -- annotations to add to the Ingress
   annotations: {}
+  # -- hostname for the Ingress
   hostname: agent.example.com # TODO: change to your domain
+  # -- TLS configuration for the Ingress
+  tls:
+    # -- enable TLS for the Ingress
+    enabled: false
 
 ingress-nginx:
+  # -- enabled specifies whether to create an Ingress-Nginx resource
   enabled: false
+  # -- Ingress-Nginx controller settings
   controller:
     ingressClassResource:
+      # -- Ingress class resource name
       name: "gitlab-agent-nginx"
 
 # -- Add additional environment settings to the pod. Can be useful in

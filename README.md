@@ -55,7 +55,7 @@ helm upgrade  gitlab-agent gitlab/gitlab-agent --reuse-values
 | securityContext | object | `{}` | set securityContext Example `{ "capabilities": { "drop": [ "ALL" ] }, "readOnlyRootFilesystem": true, "runAsNonRoot": true, "runAsUser": 1000 }` |
 | podAnnotations | object | `{"prometheus.io/path":"/metrics","prometheus.io/port":"8080","prometheus.io/scrape":"true"}` | set podAnnotations |
 | serviceMonitor.enabled | bool | `false` | Specifies whether to create a ServiceMonitor resource for collecting Prometheus metrics |
-| config | object | `{"api":{"jwtPublicKey":null,"listenAddress":":8082","listenNetwork":"tcp"},"kasAddress":"wss://kas.gitlab.com","kasCaCert":null,"kasHeaders":[],"observability":{"enabled":true,"tls":{"cert":null,"enabled":false,"key":null,"secret":{"create":false,"name":"gitlab-agent-observability"}}},"operational_container_scanning":{"enabled":true},"privateApi":{"listenAddress":":8081","listenNetwork":"tcp"},"receptive":{"enabled":false},"secretName":null,"token":null}` | configure the agent |
+| config | object | `{"api":{"jwtPublicKey":null,"listenAddress":":8082","listenNetwork":"tcp","tls":{"cert":null,"enabled":false,"key":null}},"kasAddress":"wss://kas.gitlab.com","kasCaCert":null,"kasHeaders":[],"observability":{"enabled":true,"tls":{"cert":null,"enabled":false,"key":null,"secret":{"create":false,"name":"gitlab-agent-observability"}}},"operational_container_scanning":{"enabled":true},"privateApi":{"listenAddress":":8081","listenNetwork":"tcp","tls":{"caCert":null,"cert":null,"enabled":false,"key":null}},"receptive":{"enabled":false},"secretName":null,"token":null}` | configure the agent |
 | config.kasAddress | string | `"wss://kas.gitlab.com"` | The user-facing URL for the in-cluster `agentk` |
 | config.kasHeaders | list | `[]` | add kas-headers Example: `[ "Cookie: gitlab-canary" ]` |
 | config.token | string | `nil` | put your agent token here |
@@ -72,18 +72,30 @@ helm upgrade  gitlab-agent gitlab/gitlab-agent --reuse-values
 | config.api.listenNetwork | string | `"tcp"` | API network to listen on |
 | config.api.listenAddress | string | `":8082"` | API address to listen on |
 | config.api.jwtPublicKey | string | `nil` | Base64-encoded EdDSA public key to validate JWT tokens from kas. Used for api endpoint |
+| config.api.tls | object | `{"cert":null,"enabled":false,"key":null}` | API TLS configuration |
+| config.api.tls.enabled | bool | `false` | Enable TLS for the api endpoint |
+| config.api.tls.cert | string | `nil` | X.509 certificate in PEM format for api endpoint TLS |
+| config.api.tls.key | string | `nil` | X.509 key in PEM format for api endpoint TLS |
 | config.privateApi.listenNetwork | string | `"tcp"` | Private API network to listen on |
 | config.privateApi.listenAddress | string | `":8081"` | Private API address to listen on |
+| config.privateApi.tls | object | `{"caCert":null,"cert":null,"enabled":false,"key":null}` | Private API TLS configuration |
+| config.privateApi.tls.enabled | bool | `false` | Enable TLS for the private API endpoint |
+| config.privateApi.tls.cert | string | `nil` | X.509 certificate in PEM format for private API endpoint TLS |
+| config.privateApi.tls.key | string | `nil` | X.509 key in PEM format for private API endpoint TLS |
+| config.privateApi.tls.caCert | string | `nil` | X.509 certificate authority certificate in PEM format for private API endpoint TLS |
 | service.type | string | `"ClusterIP"` | Set the service type |
 | service.externalPort | int | `8182` | Set the external port |
 | service.internalPort | int | `8082` | Set the internal port |
 | service.privateApiPort | int | `8081` | Set the private api port |
-| ingress.enabled | bool | `false` |  |
-| ingress.provider | string | `"nginx"` |  |
-| ingress.annotations | object | `{}` |  |
-| ingress.hostname | string | `"agent.example.com"` |  |
-| ingress-nginx.enabled | bool | `false` |  |
-| ingress-nginx.controller.ingressClassResource.name | string | `"gitlab-agent-nginx"` |  |
+| ingress.enabled | bool | `false` | enabled specifies whether to create an Ingress resource |
+| ingress.provider | string | `"nginx"` | Ingress provider |
+| ingress.annotations | object | `{}` | annotations to add to the Ingress |
+| ingress.hostname | string | `"agent.example.com"` | hostname for the Ingress |
+| ingress.tls | object | `{"enabled":false}` | TLS configuration for the Ingress |
+| ingress.tls.enabled | bool | `false` | enable TLS for the Ingress |
+| ingress-nginx.enabled | bool | `false` | enabled specifies whether to create an Ingress-Nginx resource |
+| ingress-nginx.controller | object | `{"ingressClassResource":{"name":"gitlab-agent-nginx"}}` | Ingress-Nginx controller settings |
+| ingress-nginx.controller.ingressClassResource.name | string | `"gitlab-agent-nginx"` | Ingress class resource name |
 | extraEnv | list | `[]` | Add additional environment settings to the pod. Can be useful in proxy environments |
 | extraArgs | list | `[]` | Add additional args settings to the pod. |
 | extraVolumeMounts | list | `[]` | Add extra volume mounts |
