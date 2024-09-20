@@ -25,7 +25,8 @@ helm upgrade --install gitlab-agent gitlab/gitlab-agent \
 
 ```shell
 helm repo update
-helm upgrade  gitlab-agent gitlab/gitlab-agent --reuse-values
+helm get values gitlab-agent > agent-values.yaml
+helm upgrade gitlab-agent gitlab/gitlab-agent -f agent-values.yaml
 ```
 
 ### Customize
