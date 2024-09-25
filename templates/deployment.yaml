@@ -65,8 +65,7 @@ spec:
               {{- end }}
               {{- if .Values.config.kasHeaders }}
                 {{- range .Values.config.kasHeaders }}
-            - --kas-header
-              - {{ . | quote }}
+            - --kas-header={{ . | quote }}
                 {{- end }}
               {{- end }}
             {{- end }}
