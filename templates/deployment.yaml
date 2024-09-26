@@ -65,7 +65,7 @@ spec:
               {{- end }}
               {{- if .Values.config.kasHeaders }}
                 {{- range .Values.config.kasHeaders }}
-            - --kas-header={{ . | quote }}
+            - {{ printf "--kas-header=%s" . | quote }}
                 {{- end }}
               {{- end }}
             {{- end }}
