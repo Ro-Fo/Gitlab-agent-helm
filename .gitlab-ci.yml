@@ -89,14 +89,18 @@ test:local:install:secret:
     - *create_secret
     - *helm_install_from_local_dir
   variables:
-    HELM_INSTALL_ARGS: --set config.secretName='test-secret'
+    HELM_INSTALL_ARGS: |
+      --set config.secretName='test-secret'
+      --set config.kasHeaders={"Cookie:gitlab_canary=true"}
 
 test:local:install:token:
   extends: .k3s
   script:
     - *helm_install_from_local_dir
   variables:
-    HELM_INSTALL_ARGS: --set config.token='FAKE-AGENT-TOKEN'
+    HELM_INSTALL_ARGS: |
+      --set config.token='FAKE-AGENT-TOKEN'
+      --set config.kasHeaders={"Cookie:gitlab_canary=true"}
 
 test:local:install:receptive_enabled:
   extends: .k3s
@@ -134,7 +138,9 @@ test:local:upgrade:secret:
     - *helm_install_from_local_dir
     - *helm_upgrade_from_local_dir
   variables:
-    HELM_INSTALL_ARGS: --set config.secretName='test-secret'
+    HELM_INSTALL_ARGS: |
+      --set config.secretName='test-secret'
+      --set config.kasHeaders={"Cookie:gitlab_canary=true"}
     HELM_UPGRADE_ARGS: $HELM_INSTALL_ARGS
 
 test:local:upgrade:token:
@@ -143,7 +149,9 @@ test:local:upgrade:token:
     - *helm_install_from_local_dir
     - *helm_upgrade_from_local_dir
   variables:
-    HELM_INSTALL_ARGS: --set config.token='FAKE-AGENT-TOKEN'
+    HELM_INSTALL_ARGS: |
+      --set config.token='FAKE-AGENT-TOKEN'
+      --set config.kasHeaders={"Cookie:gitlab_canary=true"}
     HELM_UPGRADE_ARGS: $HELM_INSTALL_ARGS
 
 test:local:upgrade:receptive_enabled:
@@ -185,7 +193,9 @@ test:breaking:upgrade:secret:
     - *helm_install_published_chart
     - *helm_upgrade_from_local_dir
   variables:
-    HELM_INSTALL_ARGS: --set config.secretName='test-secret'
+    HELM_INSTALL_ARGS: |
+      --set config.secretName='test-secret'
+      --set config.kasHeaders={"Cookie:gitlab_canary=true"}
     HELM_UPGRADE_ARGS: $HELM_INSTALL_ARGS
 
 test:breaking:upgrade:token:
@@ -194,7 +204,9 @@ test:breaking:upgrade:token:
     - *helm_install_published_chart
     - *helm_upgrade_from_local_dir
   variables:
-    HELM_INSTALL_ARGS: --set config.token='FAKE-AGENT-TOKEN'
+    HELM_INSTALL_ARGS: |
+      --set config.token='FAKE-AGENT-TOKEN'
+      --set config.kasHeaders={"Cookie:gitlab_canary=true"}
     HELM_UPGRADE_ARGS: $HELM_INSTALL_ARGS
 
 test:breaking:upgrade:receptive_enabled:
