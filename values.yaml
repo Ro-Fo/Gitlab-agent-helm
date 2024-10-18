@@ -16,6 +16,9 @@ fullnameOverride: ""
 
 # -- set number of replicas
 replicas: 2
+# -- set number of ReplicaSets to retain
+# revisionHistoryLimit -- (int) Cleanup policy, default value is determined by Kubernetes.
+revisionHistoryLimit:
 # -- set maxSurge for rolling update
 maxSurge: 1
 # -- set maxUnavailable for rolling update
