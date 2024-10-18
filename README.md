@@ -43,6 +43,7 @@ helm upgrade gitlab-agent gitlab/gitlab-agent -f agent-values.yaml
 | nameOverride | string | `""` | Override the default chart name |
 | fullnameOverride | string | `""` | Override the full chart name |
 | replicas | int | `2` | set number of replicas |
+| revisionHistoryLimit | int | `nil` | Cleanup policy, default value is determined by Kubernetes. |
 | maxSurge | int | `1` | set maxSurge for rolling update |
 | maxUnavailable | int | `0` | set maxUnavailable for rolling update |
 | rbac | object | `{"create":true,"useExistingRole":null}` | rbac settings |

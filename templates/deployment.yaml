@@ -20,6 +20,9 @@ metadata:
     {{- include "gitlab-agent.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicas }}
+  {{- if .Values.revisionHistoryLimit }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  {{- end }}
   strategy:
     rollingUpdate:
       maxSurge: {{ .Values.maxSurge }}
