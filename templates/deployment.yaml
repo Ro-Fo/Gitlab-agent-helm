@@ -162,6 +162,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+            - name: GITLAB_AGENT_TELEMETRY_installation_method
+              value: helm-chart
+            - name: GITLAB_AGENT_TELEMETRY_helm_chart_version
+              value: {{ .Chart.Version }}
             {{- if (.Values.config.receptive).enabled }}
             - name: OWN_PRIVATE_API_URL
               value: "{{ include "gitlab-agent.ownPrivateApi.scheme" . }}://$(POD_IP):{{ .Values.service.privateApiPort }}"
