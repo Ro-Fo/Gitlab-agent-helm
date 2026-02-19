@@ -90,24 +90,25 @@ Common annotations
 {{- define "gitlab-agent.annotations" -}}
 {{- $ := index . 0 }}
 {{- $annotations := index . 1 }}
-{{- $observabilityEnabled := ($.Values.config.observability).enabled }}
-{{- $token := $.Values.config.token }}
 {{- /*
 If observability is disabled, always remove the prometheus annotations to avoid Prometheus scraping a closed port
 */ -}}
-{{- if (not $observabilityEnabled) }}
+{{- if (not ($.Values.config.observability).enabled) }}
 {{- $annotations := unset $annotations "prometheus.io/path" }}
 {{- $annotations := unset $annotations "prometheus.io/port" }}
 {{- $annotations := unset $annotations "prometheus.io/scrape" }}
 {{- end }}
-{{- with $token }}
+{{- with $.Values.config.token }}
 {{ printf "checksum/token: %s" (. | sha256sum) }}
+{{- end }}
+{{- with $.Values.config.kasCaCert }}
+{{ printf "checksum/ca-cert: %s" (. | sha256sum) }}
+{{- end }}
+{{- with $.Values.config.privateApi.tls.caCert }}
+{{ printf "checksum/private-api-tls-ca-cert: %s" (. | sha256sum) }}
 {{- end }}
 {{- with $annotations }}
 {{ toYaml $annotations }}
-{{- end }}
-{{- if and (not $token) (not $annotations) }}
-{{ printf "{}" -}}
 {{- end }}
 {{- end }}
 
