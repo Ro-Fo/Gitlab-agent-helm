@@ -95,6 +95,15 @@ config:
   operational_container_scanning:
     # -- enables automatic RBAC creation for the operational container scanning feature
     enabled: true
+    # -- Operational Scanning Service Account configuration
+    serviceAccount:
+      # -- Specifies whether a service account should be created
+      create: true
+      # -- Annotations to add to the service account
+      annotations: {}
+      # -- The name of the service account to use.
+      # @default -- name is generated using the fullname template, appended with '-ocs-scanning-pod-sa'
+      name:
 
   receptive:
     # -- Enable receptive agent
