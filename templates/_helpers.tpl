@@ -139,7 +139,20 @@ Create the name of the service account to use
 Expand the OCS service account name.
 */}}
 {{- define "gitlab-agent.ocs.serviceAccountName" -}}
-{{- printf "%s-ocs-scanning-pod-sa" (include "gitlab-agent.fullname" .) }}
+{{- default (printf "%s-ocs-scanning-pod-sa" (include "gitlab-agent.fullname" .)) ((.Values.config.operational_container_scanning.serviceAccount).name) }}
+{{- end }}
+
+{{/*
+Expand the OCS ServiceAccount Annotations.
+*/}}
+{{- define "gitlab-agent.ocs.annotations" -}}
+{{- $ocs := .Values.config.operational_container_scanning | default (dict)  -}}
+{{- $default := .Values.serviceAccount.annotations -}}
+{{- if and $ocs (and $ocs.serviceAccount $ocs.serviceAccount.annotations) -}}
+  {{- toYaml $ocs.serviceAccount.annotations }}
+{{- else }}
+  {{- toYaml $default }}
+{{- end }}
 {{- end }}
 
 {{/*
@@ -173,6 +186,7 @@ Returns if the OCS is enabled
 "false"
 {{- end -}}
 {{- end -}}
+
 
 {{/*
 Service name

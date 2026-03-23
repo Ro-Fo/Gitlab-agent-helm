@@ -57,7 +57,7 @@ helm upgrade gitlab-agent gitlab/gitlab-agent -f agent-values.yaml
 | securityContext | object | `{}` | set securityContext Example `{ "capabilities": { "drop": [ "ALL" ] }, "readOnlyRootFilesystem": true, "runAsNonRoot": true, "runAsUser": 1000 }` |
 | podAnnotations | object | `{"prometheus.io/path":"/metrics","prometheus.io/port":"8080","prometheus.io/scrape":"true"}` | set podAnnotations |
 | serviceMonitor.enabled | bool | `false` | Specifies whether to create a ServiceMonitor resource for collecting Prometheus metrics |
-| config | object | `{"api":{"jwtPublicKey":null,"listenAddress":":8082","listenNetwork":"tcp","tls":{"cert":null,"enabled":false,"key":null}},"kasAddress":"wss://kas.gitlab.com","kasCaCert":null,"kasHeaders":[],"observability":{"enabled":true,"tls":{"cert":null,"enabled":false,"key":null,"secret":{"create":false,"name":"gitlab-agent-observability"}}},"operational_container_scanning":{"enabled":true},"privateApi":{"listenAddress":":8081","listenNetwork":"tcp","tls":{"caCert":null,"cert":null,"enabled":false,"key":null}},"receptive":{"enabled":false},"secretName":null,"token":null}` | configure the agent |
+| config | object | `{"api":{"jwtPublicKey":null,"listenAddress":":8082","listenNetwork":"tcp","tls":{"cert":null,"enabled":false,"key":null}},"kasAddress":"wss://kas.gitlab.com","kasCaCert":null,"kasHeaders":[],"observability":{"enabled":true,"tls":{"cert":null,"enabled":false,"key":null,"secret":{"create":false,"name":"gitlab-agent-observability"}}},"operational_container_scanning":{"enabled":true,"serviceAccount":{"annotations":{},"create":true,"name":null}},"privateApi":{"listenAddress":":8081","listenNetwork":"tcp","tls":{"caCert":null,"cert":null,"enabled":false,"key":null}},"receptive":{"enabled":false},"secretName":null,"token":null}` | configure the agent |
 | config.kasAddress | string | `"wss://kas.gitlab.com"` | The user-facing URL for the in-cluster `agentk` |
 | config.kasHeaders | list | `[]` | add kas-headers Example: `[ "Cookie: gitlab-canary" ]` |
 | config.token | string | `nil` | put your agent token here |
@@ -70,6 +70,10 @@ helm upgrade gitlab-agent gitlab/gitlab-agent -f agent-values.yaml
 | config.observability.tls.secret.create | bool | `false` | when true, creates a certificate with values cert and key from  for the observability service |
 | config.observability.tls.secret.name | string | `"gitlab-agent-observability"` | secret name for the observability service |
 | config.operational_container_scanning.enabled | bool | `true` | enables automatic RBAC creation for the operational container scanning feature |
+| config.operational_container_scanning.serviceAccount | object | `{"annotations":{},"create":true,"name":null}` | Operational Scanning Service Account configuration |
+| config.operational_container_scanning.serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
+| config.operational_container_scanning.serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
+| config.operational_container_scanning.serviceAccount.name | string | name is generated using the fullname template, appended with '-ocs-scanning-pod-sa' | The name of the service account to use. |
 | config.receptive.enabled | bool | `false` | Enable receptive agent |
 | config.api.listenNetwork | string | `"tcp"` | API network to listen on |
 | config.api.listenAddress | string | `":8082"` | API address to listen on |
