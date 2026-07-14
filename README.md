@@ -46,6 +46,7 @@ helm upgrade gitlab-agent gitlab/gitlab-agent -f agent-values.yaml
 | revisionHistoryLimit | int | `nil` | Cleanup policy, default value is determined by Kubernetes. |
 | maxSurge | int | `1` | set maxSurge for rolling update |
 | maxUnavailable | int | `0` | set maxUnavailable for rolling update |
+| hostUsers | string | `nil` | Set `hostUsers` on the pod to enable/disable the host user namespace. Requires Kubernetes 1.36+. Set to `false` to isolate the pod from the host user namespace. Leave unset to use the Kubernetes default. |
 | rbac | object | `{"create":true,"useExistingRole":null}` | rbac settings |
 | rbac.create | bool | `true` | Specifies whether RBAC resources should be created |
 | rbac.useExistingRole | string | cluster-admin | Set to a rolename to use existing role. |

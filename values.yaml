@@ -24,6 +24,11 @@ maxSurge: 1
 # -- set maxUnavailable for rolling update
 maxUnavailable: 0
 
+# -- Set `hostUsers` on the pod to enable/disable the host user namespace.
+# Requires Kubernetes 1.36+. Set to `false` to isolate the pod from the host
+# user namespace. Leave unset to use the Kubernetes default.
+hostUsers: ~
+
 # -- rbac settings
 rbac:
   # -- Specifies whether RBAC resources should be created

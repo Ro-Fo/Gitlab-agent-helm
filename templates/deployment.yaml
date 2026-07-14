@@ -39,6 +39,9 @@ spec:
         {{- include "gitlab-agent.agentPodLabels" . | nindent 8 }}
     spec:
       automountServiceAccountToken: false
+      {{- if kindIs "bool" .Values.hostUsers }}
+      hostUsers: {{ .Values.hostUsers }}
+      {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
