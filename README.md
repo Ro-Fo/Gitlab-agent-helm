@@ -117,6 +117,7 @@ helm upgrade gitlab-agent gitlab/gitlab-agent -f agent-values.yaml
 | podLabels | object | `{}` | Labels to be added to each agent pod Example: `role: developer` |
 | additionalLabels | object | `{}` | Additional labels to be added to all created objects |
 | initContainers | list | `[]` | Optional initContainers definition |
+| extraManifests | list | `[]` | Add extra Kubernetes manifests to be rendered. Each entry is templated, so you can reference `.Release.Name`, `.Values.*`, etc. Because entries are templated, any literal `{{` or `}}` in a value (e.g. in an annotation) must be escaped, e.g. `{{ "{{" }}`, or rendering will fail. Example: `- apiVersion: v1   kind: ConfigMap   metadata:     name: extra-configmap   data:     key: value` |
 | terminationMessagePolicy | string | `"FallbackToLogsOnError"` |  Show the last 80 lines or 2048 bytes (whichever is smaller) of pod logs in kubectl describe output when container exits with non-zero exit code # Useful for when pod logs are cycled out of a node post-crash before an operator can capture the logs Valid values are 'File' which is the Kubernetes API default, or 'FallbackToLogsOnError' See <https://kubernetes.io/docs/tasks/debug/debug-application/determine-reason-pod-failure/> for more information |
 
 ### Install from source
