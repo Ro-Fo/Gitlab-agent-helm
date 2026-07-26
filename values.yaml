@@ -228,6 +228,19 @@ additionalLabels: {}
 # -- Optional initContainers definition
 initContainers: []
 
+# -- Add extra Kubernetes manifests to be rendered. Each entry is templated,
+# so you can reference `.Release.Name`, `.Values.*`, etc.
+# Because entries are templated, any literal `{{` or `}}` in a value (e.g. in an
+# annotation) must be escaped, e.g. `{{ "{{" }}`, or rendering will fail.
+# Example:
+# `- apiVersion: v1
+#   kind: ConfigMap
+#   metadata:
+#     name: extra-configmap
+#   data:
+#     key: value`
+extraManifests: []
+
 # --
 # Show the last 80 lines or 2048 bytes (whichever is smaller) of pod logs in kubectl describe output when
 # container exits with non-zero exit code # Useful for when pod logs are cycled out of a node post-crash
