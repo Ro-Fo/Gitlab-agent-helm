@@ -12,6 +12,7 @@ Sie ist bewusst getrennt vom generierten `README.md` (das aus `values.yaml` per
 
 | Dokument | Inhalt |
 |---|---|
+| [00-leitprinzip-orchestrierung.md](00-leitprinzip-orchestrierung.md) | **Der Maßstab, aus dem der Rest folgt:** Der Agent orchestriert Produkte, statt selbst welche zu sein — mit Prüfkriterium und Bewertung des Bestands |
 | [01-deployment-inventar.md](01-deployment-inventar.md) | Welche Kubernetes-Objekte das Chart erzeugt, unter welchen Bedingungen, mit welchen Parametern |
 | [02-gitlab-schnittstellen.md](02-gitlab-schnittstellen.md) | Alle Schnittstellen zwischen Cluster und GitLab: Netzwerkverbindungen, Ports, Protokolle, Authentifizierung, Egress-Anforderungen |
 | [03-rechte-und-rbac.md](03-rechte-und-rbac.md) | Alle Rechte: Kubernetes-RBAC aus dem Chart, GitLab-seitige Tokens und Scopes, Impersonation-Modelle, Härtungsempfehlungen |
@@ -36,6 +37,13 @@ davon im Cluster läuft und was serverseitig) liegt im Fork des Agent-Repos:
 | Upstream-Commit Chart | `fc5d8820` (`main`) |
 | Upstream-Commit Agent-Repo | `5c79b354` (`master`, `VERSION` = 19.3.0-rc3) |
 | Analysedatum | 2026-08-10 |
+
+## Leitprinzip
+
+Alle Zielbilder in dieser Reihe folgen einem Satz:
+**Der GitLab Agent ist ein Orchestrierungsprodukt — er soll keine Produkte sein,
+sondern Produkte nutzen.** Kriterium und Bewertung des Bestands stehen in
+[00-leitprinzip-orchestrierung.md](00-leitprinzip-orchestrierung.md).
 
 ## Kurzfassung für Eilige
 
