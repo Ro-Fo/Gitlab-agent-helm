@@ -15,6 +15,8 @@ Sie ist bewusst getrennt vom generierten `README.md` (das aus `values.yaml` per
 | [01-deployment-inventar.md](01-deployment-inventar.md) | Welche Kubernetes-Objekte das Chart erzeugt, unter welchen Bedingungen, mit welchen Parametern |
 | [02-gitlab-schnittstellen.md](02-gitlab-schnittstellen.md) | Alle Schnittstellen zwischen Cluster und GitLab: Netzwerkverbindungen, Ports, Protokolle, Authentifizierung, Egress-Anforderungen |
 | [03-rechte-und-rbac.md](03-rechte-und-rbac.md) | Alle Rechte: Kubernetes-RBAC aus dem Chart, GitLab-seitige Tokens und Scopes, Impersonation-Modelle, Härtungsempfehlungen |
+| [04-feature-matrix-abschaltbarkeit.md](04-feature-matrix-abschaltbarkeit.md) | Alle Features mit Schalter-Ort und Wirksamkeitsklasse: was sich wo abschalten lässt und wie man es verifiziert |
+| [05-zielbild-architektur.md](05-zielbild-architektur.md) | Microservice-Frage, Bewertung dreier Isolationsmodelle, Zielbild der Situationsschicht, Stufenplan |
 
 Die produktseitige Einordnung (welche Binaries und Module es überhaupt gibt, was
 davon im Cluster läuft und was serverseitig) liegt im Fork des Agent-Repos:
@@ -43,3 +45,10 @@ davon im Cluster läuft und was serverseitig) liegt im Fork des Agent-Repos:
 - **Die Standardkonfiguration gibt `agentk` `cluster-admin` im gesamten Cluster.**
   Das ist der mit Abstand wichtigste Befund dieser Analyse. Siehe
   [03-rechte-und-rbac.md](03-rechte-und-rbac.md).
+- **Von 13 clusterrelevanten Feature-Flächen sind heute zwei im Cluster
+  abschaltbar.** Alle übrigen Schalter liegen in GitLab, nicht im Chart. Siehe
+  [04-feature-matrix-abschaltbarkeit.md](04-feature-matrix-abschaltbarkeit.md).
+- **Die Isolationseinheit dieses Systems ist der Agent, nicht das Modul.**
+  Mehrere Agenten mit je eigenem Token und RBAC sind der gangbare Weg zu echter
+  Trennung — ohne Codeänderung. Siehe
+  [05-zielbild-architektur.md](05-zielbild-architektur.md).
