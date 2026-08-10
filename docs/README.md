@@ -18,6 +18,10 @@ Sie ist bewusst getrennt vom generierten `README.md` (das aus `values.yaml` per
 | [04-feature-matrix-abschaltbarkeit.md](04-feature-matrix-abschaltbarkeit.md) | Alle Features mit Schalter-Ort und Wirksamkeitsklasse: was sich wo abschalten lässt und wie man es verifiziert |
 | [05-zielbild-architektur.md](05-zielbild-architektur.md) | Microservice-Frage, Bewertung dreier Isolationsmodelle, Zielbild der Situationsschicht, Stufenplan |
 | [06-strategie-gitops-crd.md](06-strategie-gitops-crd.md) | Strategie für regulierte Umgebungen: Deployment nur über ArgoCD/Flux, Scanning über Trivy-Operator-CRDs, Status zurück an den Merge Request |
+| [07-konflikte-und-backend-schicht.md](07-konflikte-und-backend-schicht.md) | Konflikte der Strategie unter der Auflage „nur bestehende GitLab-Schnittstellen", und der Entwurf einer Backend-Zwischenschicht für Flux, ArgoCD und weitere |
+
+> **Lesehinweis:** Dokument 07 revidiert mehrere Aussagen aus 06 — siehe dort
+> Teil 4. Bei Widersprüchen gilt 07.
 
 Die produktseitige Einordnung (welche Binaries und Module es überhaupt gibt, was
 davon im Cluster läuft und was serverseitig) liegt im Fork des Agent-Repos:
